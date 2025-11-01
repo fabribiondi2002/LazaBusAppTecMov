@@ -67,7 +67,7 @@ fun MainScreen() {
                     VoiceActionButton(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 48.dp),
+                            .padding(bottom =  paddingValues.calculateBottomPadding()),
                         onClick = { /* Lógica del comando de voz */ }
                     )
 

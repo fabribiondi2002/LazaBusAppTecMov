@@ -25,7 +25,7 @@ fun VoiceActionButton(modifier: Modifier, onClick: () -> Unit, contentDescriptio
     Button(
         onClick = onClick,
         modifier = modifier
-            .height(96.dp)
+            .height(144.dp)
             .semantics { this.contentDescription = contentDescription },
         shape = RectangleShape,
         colors = ButtonDefaults.buttonColors(containerColor = LazabusBlue),
