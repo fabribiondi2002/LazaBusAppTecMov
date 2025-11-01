@@ -12,17 +12,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.iua.gpi.lazabus.ui.component.VoiceActionButton
 import com.iua.gpi.lazabus.R
 import com.iua.gpi.lazabus.ui.component.MapArea
+import com.iua.gpi.lazabus.ui.viewmodel.TtsViewModel
 
 // Definimos los colores principales para mantener la coherencia con el diseño de la captura
 val LazabusBlue = Color(0xFF1E88E5) // Un azul brillante para el app bar y el botón
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen( viewModel: TtsViewModel = hiltViewModel()) {
 
+    viewModel.saludar()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -68,7 +71,7 @@ fun MainScreen() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom =  paddingValues.calculateBottomPadding()),
-                        onClick = { /* Lógica del comando de voz */ }
+                        onClick = { viewModel.saludar() }
                     )
 
                 }
