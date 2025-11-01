@@ -31,7 +31,7 @@ fun MapArea(modifier: Modifier, mapDescription: String = stringResource(R.string
         // cache del dispositivo.
         Configuration.getInstance().load(context, context.getSharedPreferences("osmdroid", 0))
 
-        // 1. Crear y recordar la instancia de MapView
+        //Crear y recordar la instancia de MapView
         val mapView = remember {
             MapView(context).apply {
                 // Establecer la fuente de los tiles (OSM estándar)
@@ -52,7 +52,7 @@ fun MapArea(modifier: Modifier, mapDescription: String = stringResource(R.string
             }
         }
 
-        // 3. Usar AndroidView para incrustar el MapView de osmdroid en Compose
+        //Usar AndroidView para incrustar el MapView de osmdroid en Compose
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = { mapView },

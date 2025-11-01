@@ -1,14 +1,7 @@
 package com.iua.gpi.lazabus.ui.screen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,8 +12,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import com.iua.gpi.lazabus.ui.component.VoiceActionButton
 import com.iua.gpi.lazabus.R
 import com.iua.gpi.lazabus.ui.component.MapArea
@@ -63,7 +54,7 @@ fun MainScreen() {
                     .padding(top = topPadding)
                     .background(Color(0xFFF0F0F0)) // Fondo ligero para el resto de la pantalla
             ) {
-                // 1. Área del Mapa (grande con desplazamiento)
+                // Área del Mapa (grande con desplazamiento)
                 MapArea(
                     modifier = Modifier.weight(1f).fillMaxWidth()
                 )
