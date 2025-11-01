@@ -2,6 +2,7 @@ package com.iua.gpi.lazabus.ui.screen
 
 sealed class Route(val route: String) {
     // Pantalla sin argumentos
+    object SplashRoute : Route("splash")
     object GreetingRoute : Route("greeting_screen")
 
     /**
