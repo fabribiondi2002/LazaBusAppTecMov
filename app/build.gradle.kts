@@ -87,6 +87,9 @@ dependencies {
     //compose navigation
     implementation("androidx.navigation:navigation-compose:2.7.5") // Versión actual
 
+    // osmdroid (OpenStreetMap)
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

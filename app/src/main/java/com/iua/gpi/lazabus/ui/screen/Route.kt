@@ -4,6 +4,7 @@ sealed class Route(val route: String) {
     // Pantalla sin argumentos
     object SplashRoute : Route("splash")
     object GreetingRoute : Route("greeting_screen")
+    object MainRoute : Route ("main_screen")
 
     /**
     // Pantalla con argumento obligatorio

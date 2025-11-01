@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">LazaBus</string>
+    <string name="voiceButtonDescription">Botón de comando de voz. Toca para iniciar la navegación o hacer preguntas sobre el transporte público.</string>
+    <string name="mapDescription">"Mapa interactivo de la ciudad. Muestra tu ubicación actual, paradas de autobús y rutas disponibles. Desplázate para explorar."</string>
 </resources>
