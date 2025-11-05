@@ -16,9 +16,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.iua.gpi.lazabus.ui.component.VoiceActionButton
 import com.iua.gpi.lazabus.R
+import com.iua.gpi.lazabus.ui.component.DestinoArea
 import com.iua.gpi.lazabus.ui.component.MapArea
 import com.iua.gpi.lazabus.ui.permission.MicPermissionRequest
 import com.iua.gpi.lazabus.ui.viewmodel.SttViewModel
+import com.iua.gpi.lazabus.ui.component.UbicacionActual
 import com.iua.gpi.lazabus.ui.viewmodel.TtsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -65,10 +67,24 @@ fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(), sttviewmodel: SttV
                     .padding(top = topPadding)
                     .background(Color(0xFFF0F0F0)) // Fondo ligero para el resto de la pantalla
             ) {
+
+                UbicacionActual()
+
                 // Área del Mapa (grande con desplazamiento)
                 MapArea(
                     modifier = Modifier.weight(1f).fillMaxWidth()
                 )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(LazabusBlue)
+                ) {
+                    DestinoArea(
+                        destino = "Plaza San Martín",
+                        modifier = Modifier.align(Alignment.TopCenter)
+                    )
+                }
 
                 Box(
                     modifier = Modifier
