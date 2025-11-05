@@ -17,6 +17,7 @@ import com.iua.gpi.lazabus.ui.component.VoiceActionButton
 import com.iua.gpi.lazabus.R
 import com.iua.gpi.lazabus.ui.component.DestinoArea
 import com.iua.gpi.lazabus.ui.component.MapArea
+import com.iua.gpi.lazabus.ui.component.UbicacionActual
 import com.iua.gpi.lazabus.ui.viewmodel.TtsViewModel
 
 // Definimos los colores principales para mantener la coherencia con el diseño de la captura
@@ -58,6 +59,8 @@ fun MainScreen( viewModel: TtsViewModel = hiltViewModel()) {
                     .padding(top = topPadding)
                     .background(Color(0xFFF0F0F0)) // Fondo ligero para el resto de la pantalla
             ) {
+
+                UbicacionActual()
 
                 // Área del Mapa (grande con desplazamiento)
                 MapArea(
