@@ -1,7 +1,9 @@
 package com.iua.gpi.lazabus.service.di
 
 import android.content.Context
+import com.iua.gpi.lazabus.service.SttService
 import com.iua.gpi.lazabus.service.TtsService
+import com.iua.gpi.lazabus.service.interf.SttServiceI
 import com.iua.gpi.lazabus.service.interf.TtsServiceI
 import dagger.Module
 import dagger.Provides
@@ -28,5 +30,10 @@ object AppModule {
     fun provideTtsService(@ApplicationContext context: Context): TtsServiceI {
         // Usar AndroidTtsService y hacer que viva mientras viva la app (Singleton)
         return TtsService(context)
+    }
+
+    @Provides
+    fun provideSttService(@ApplicationContext context: Context): SttServiceI {
+        return SttService(context)
     }
 }

@@ -4,14 +4,15 @@ import android.content.Context
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import com.iua.gpi.lazabus.service.interf.TtsServiceI
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.Locale
+import javax.inject.Inject
 
 
-class TtsService(
-    private val context: Context // Usamos Application Context
+class TtsService(private val context: Context // Usamos Application Context
 ) : TtsServiceI, TextToSpeech.OnInitListener {
 
     private var tts: TextToSpeech? = null

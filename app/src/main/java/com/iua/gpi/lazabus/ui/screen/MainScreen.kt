@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,17 +18,24 @@ import com.iua.gpi.lazabus.ui.component.VoiceActionButton
 import com.iua.gpi.lazabus.R
 import com.iua.gpi.lazabus.ui.component.DestinoArea
 import com.iua.gpi.lazabus.ui.component.MapArea
+import com.iua.gpi.lazabus.ui.permission.MicPermissionRequest
+import com.iua.gpi.lazabus.ui.viewmodel.SttViewModel
 import com.iua.gpi.lazabus.ui.component.UbicacionActual
 import com.iua.gpi.lazabus.ui.viewmodel.TtsViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 // Definimos los colores principales para mantener la coherencia con el diseño de la captura
 val LazabusBlue = Color(0xFF1E88E5) // Un azul brillante para el app bar y el botón
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen( viewModel: TtsViewModel = hiltViewModel()) {
+fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(), sttviewmodel: SttViewModel = hiltViewModel()) {
 
-    viewModel.saludar()
+    MicPermissionRequest()
+    ttsviewModel.saludar()
+
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -87,7 +95,7 @@ fun MainScreen( viewModel: TtsViewModel = hiltViewModel()) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom =  paddingValues.calculateBottomPadding()),
-                        onClick = { viewModel.saludar() }
+                        onClick = {}
                     )
 
                 }
@@ -95,7 +103,5 @@ fun MainScreen( viewModel: TtsViewModel = hiltViewModel()) {
         }
     )
 }
-
-
 
 
