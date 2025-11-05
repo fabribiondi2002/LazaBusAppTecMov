@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -15,19 +16,39 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.iua.gpi.lazabus.ui.AppNavigation
 import com.iua.gpi.lazabus.ui.component.Greeting
 import com.iua.gpi.lazabus.ui.theme.LazaBusTheme
+import com.iua.gpi.lazabus.ui.viewmodel.ParadaViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: ParadaViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        enableEdgeToEdge()
-        setContent {
-            LazaBusTheme {
-                AppNavigation()
+
+        viewModel.cargaParadaPorId(
+            id = 3,
+            onResult = { parada ->
+                println("✅ Parada recibida: $parada")
+            },
+            onError = { error ->
+                println("❌ Error: ${error.message}")
             }
-        }
+        )
     }
 }
+//@AndroidEntryPoint
+//class MainActivity : ComponentActivity() {
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+//        enableEdgeToEdge()
+//        setContent {
+//            LazaBusTheme {
+//                AppNavigation()
+//            }
+//        }
+//    }
+//}
