@@ -33,8 +33,7 @@ val LazabusBlue = Color(0xFF1E88E5) // Un azul brillante para el app bar y el bo
 fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(), sttviewmodel: SttViewModel = hiltViewModel()) {
 
     MicPermissionRequest()
-    ttsviewModel.saludar()
-
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -95,7 +94,12 @@ fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(), sttviewmodel: SttV
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom =  paddingValues.calculateBottomPadding()),
-                        onClick = {}
+                        onClick = {scope.launch {
+                            sttviewmodel.startVoiceInput()
+                            delay(5000)
+                            sttviewmodel.stopVoiceInput()
+                            ttsviewModel.hablar(sttviewmodel.uiText.value)
+                        }}
                     )
 
                 }
