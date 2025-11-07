@@ -40,6 +40,15 @@ class TtsViewModel @Inject constructor(
         }
     }
 
+    fun hablar(text: String)
+    {
+        if (ttsService.isInitialized) {
+            ttsService.speak(text)
+        } else {
+            Log.w("TTSVM", "Servicio de hablar no disponible aún.")
+        }
+    }
+
     /** Llama a shutdown() cuando el ViewModel se destruye. */
     override fun onCleared() {
         ttsService.shutdown()
