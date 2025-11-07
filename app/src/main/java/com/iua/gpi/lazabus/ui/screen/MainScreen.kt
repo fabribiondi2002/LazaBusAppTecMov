@@ -21,6 +21,7 @@ import com.iua.gpi.lazabus.ui.component.MapArea
 import com.iua.gpi.lazabus.ui.permission.MicPermissionRequest
 import com.iua.gpi.lazabus.ui.viewmodel.SttViewModel
 import com.iua.gpi.lazabus.ui.component.UbicacionActual
+import com.iua.gpi.lazabus.ui.viewmodel.GeocoderViewModel
 import com.iua.gpi.lazabus.ui.viewmodel.TtsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -30,7 +31,8 @@ val LazabusBlue = Color(0xFF1E88E5) // Un azul brillante para el app bar y el bo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(), sttviewmodel: SttViewModel = hiltViewModel()) {
+fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(), sttviewmodel: SttViewModel = hiltViewModel(),
+                geocoderViewModel: GeocoderViewModel = hiltViewModel()) {
 
     MicPermissionRequest()
     val scope = rememberCoroutineScope()
@@ -99,6 +101,7 @@ fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(), sttviewmodel: SttV
                             delay(5000)
                             sttviewmodel.stopVoiceInput()
                             ttsviewModel.hablar(sttviewmodel.uiText.value)
+                            geocoderViewModel.buscarUbicacion(sttviewmodel.uiText.value)
                         }}
                     )
 
