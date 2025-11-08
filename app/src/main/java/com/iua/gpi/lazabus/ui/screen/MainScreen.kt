@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import com.iua.gpi.lazabus.ui.permission.LocationPermissionRequest
 import com.iua.gpi.lazabus.ui.viewmodel.GeocoderViewModel
 import com.iua.gpi.lazabus.ui.viewmodel.LocationViewModel
+import com.iua.gpi.lazabus.ui.viewmodel.RutaViewModel
 import com.iua.gpi.lazabus.ui.viewmodel.TtsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -43,15 +44,18 @@ val LazabusBlue = Color(0xFF1E88E5) // Un azul brillante para el app bar y el bo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(), sttviewmodel: SttViewModel = hiltViewModel(),
+fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(),
+                sttviewmodel: SttViewModel = hiltViewModel(),
                 geocoderViewModel: GeocoderViewModel = hiltViewModel(),
-                locationViewModel: LocationViewModel = hiltViewModel()) {
+                locationViewModel: LocationViewModel = hiltViewModel(),
+                rutaViewModel: RutaViewModel = hiltViewModel()) {
 
     //permisos
     MicPermissionRequest()
     LocationPermissionRequest()
 
     val currentLocation by locationViewModel.currentLocation.collectAsState()
+    val paradasMapa by rutaViewModel.paradasGeoPoints.collectAsState()
 
     val scope = rememberCoroutineScope()
 
@@ -98,11 +102,7 @@ fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(), sttviewmodel: SttV
 
                 MapMarkers(
                     mapView = mapViewState.value,
-                    coordinates = listOf(
-                        GeoPoint(-31.4201, -64.1888), // Córdoba centro
-                        GeoPoint(-31.415, -64.19),
-                        GeoPoint(-31.43, -64.185)
-                    )
+                    coordinates = paradasMapa
                 )
 
                 Box(
