@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,14 +15,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+
 import com.iua.gpi.lazabus.ui.component.VoiceActionButton
 import com.iua.gpi.lazabus.R
 import com.iua.gpi.lazabus.ui.component.DestinoArea
 import com.iua.gpi.lazabus.ui.component.MapArea
 import com.iua.gpi.lazabus.ui.permission.MicPermissionRequest
 import com.iua.gpi.lazabus.ui.viewmodel.SttViewModel
-import com.iua.gpi.lazabus.ui.component.UbicacionActual
+import androidx.compose.runtime.getValue
+import com.iua.gpi.lazabus.ui.permission.LocationPermissionRequest
 import com.iua.gpi.lazabus.ui.viewmodel.GeocoderViewModel
+import com.iua.gpi.lazabus.ui.viewmodel.LocationViewModel
 import com.iua.gpi.lazabus.ui.viewmodel.TtsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -32,9 +36,15 @@ val LazabusBlue = Color(0xFF1E88E5) // Un azul brillante para el app bar y el bo
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(), sttviewmodel: SttViewModel = hiltViewModel(),
-                geocoderViewModel: GeocoderViewModel = hiltViewModel()) {
+                geocoderViewModel: GeocoderViewModel = hiltViewModel(),
+                locationViewModel: LocationViewModel = hiltViewModel()) {
 
+    //permisos
     MicPermissionRequest()
+    LocationPermissionRequest()
+
+    val currentLocation by locationViewModel.currentLocation.collectAsState()
+
     val scope = rememberCoroutineScope()
 
     Scaffold(
@@ -69,7 +79,6 @@ fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(), sttviewmodel: SttV
                     .background(Color(0xFFF0F0F0)) // Fondo ligero para el resto de la pantalla
             ) {
 
-                UbicacionActual()
 
                 // Área del Mapa (grande con desplazamiento)
                 MapArea(
