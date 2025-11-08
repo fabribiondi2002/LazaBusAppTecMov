@@ -4,13 +4,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 
 import androidx.compose.runtime.collectAsState
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,6 +29,7 @@ import com.iua.gpi.lazabus.ui.component.MapMarkers
 import com.iua.gpi.lazabus.ui.permission.MicPermissionRequest
 import com.iua.gpi.lazabus.ui.viewmodel.SttViewModel
 import androidx.compose.runtime.getValue
+import com.iua.gpi.lazabus.interaction.manageInteraction
 import com.iua.gpi.lazabus.ui.permission.LocationPermissionRequest
 import com.iua.gpi.lazabus.ui.viewmodel.GeocoderViewModel
 import com.iua.gpi.lazabus.ui.viewmodel.LocationViewModel
@@ -36,7 +37,6 @@ import com.iua.gpi.lazabus.ui.viewmodel.RutaViewModel
 import com.iua.gpi.lazabus.ui.viewmodel.TtsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 
 // Definimos los colores principales para mantener la coherencia con el diseño de la captura
@@ -54,10 +54,11 @@ fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(),
     MicPermissionRequest()
     LocationPermissionRequest()
 
-    val currentLocation by locationViewModel.currentLocation.collectAsState()
     val paradasMapa by rutaViewModel.paradasGeoPoints.collectAsState()
 
-    val scope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        manageInteraction(ttsviewModel,sttviewmodel,geocoderViewModel,locationViewModel,rutaViewModel)
+    }
 
     Scaffold(
         topBar = {
@@ -125,13 +126,8 @@ fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom =  paddingValues.calculateBottomPadding()),
-                        onClick = {scope.launch {
-                            sttviewmodel.startVoiceInput()
-                            delay(5000)
-                            sttviewmodel.stopVoiceInput()
-                            ttsviewModel.hablar(sttviewmodel.uiText.value)
-                            geocoderViewModel.buscarUbicacion(sttviewmodel.uiText.value)
-                        }}
+                        onClick = {    rutaViewModel.calcularRutaOptima(-31.412684894741222,-64.20055023585927,-31.4328235977395, -64.27699975384215,{})
+                        }
                     )
 
                 }
