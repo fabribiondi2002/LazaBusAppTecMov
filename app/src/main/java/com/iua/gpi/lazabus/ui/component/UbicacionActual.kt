@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 
+@Deprecated("Cambiado por ViewModel el 08/11/2025")
 @SuppressLint("MissingPermission")
 @Composable
 fun UbicacionActual() {

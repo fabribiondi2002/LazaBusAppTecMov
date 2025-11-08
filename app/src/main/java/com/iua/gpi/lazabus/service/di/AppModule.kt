@@ -1,8 +1,12 @@
 package com.iua.gpi.lazabus.service.di
 
 import android.content.Context
+import com.iua.gpi.lazabus.service.GeocodeService
+import com.iua.gpi.lazabus.service.LocationService
 import com.iua.gpi.lazabus.service.SttService
 import com.iua.gpi.lazabus.service.TtsService
+import com.iua.gpi.lazabus.service.interf.GeocodeServiceI
+import com.iua.gpi.lazabus.service.interf.LocationServiceI
 import com.iua.gpi.lazabus.service.interf.SttServiceI
 import com.iua.gpi.lazabus.service.interf.TtsServiceI
 import dagger.Module
@@ -36,4 +40,17 @@ object AppModule {
     fun provideSttService(@ApplicationContext context: Context): SttServiceI {
         return SttService(context)
     }
+
+    @Provides
+    @Singleton
+    fun provideGeocodeService(@ApplicationContext context: Context): GeocodeServiceI {
+        return GeocodeService(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLocationService(@ApplicationContext context: Context): LocationServiceI {
+        return LocationService(context)
+    }
+
 }
