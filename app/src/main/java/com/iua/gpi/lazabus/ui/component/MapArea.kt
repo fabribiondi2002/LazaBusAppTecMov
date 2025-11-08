@@ -19,7 +19,11 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 
 @Composable
-fun MapArea(modifier: Modifier, mapDescription: String = stringResource(R.string.mapDescription)) {
+fun MapArea(
+    modifier: Modifier,
+    mapDescription: String = stringResource(R.string.mapDescription),
+    onMapReady: (MapView) -> Unit = {}
+) {
     Box(
         modifier = modifier
             .background(Color.LightGray) // Color base para el mapa
@@ -56,7 +60,7 @@ fun MapArea(modifier: Modifier, mapDescription: String = stringResource(R.string
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = { mapView },
-            update = { /* Puedes actualizar propiedades del mapa aquí si es necesario */ }
+            update = {onMapReady(mapView) }
         )
     }
 }

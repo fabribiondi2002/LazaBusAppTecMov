@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,12 +20,15 @@ import com.iua.gpi.lazabus.ui.component.VoiceActionButton
 import com.iua.gpi.lazabus.R
 import com.iua.gpi.lazabus.ui.component.DestinoArea
 import com.iua.gpi.lazabus.ui.component.MapArea
+import com.iua.gpi.lazabus.ui.component.MapMarkers
 import com.iua.gpi.lazabus.ui.permission.MicPermissionRequest
 import com.iua.gpi.lazabus.ui.viewmodel.SttViewModel
 import com.iua.gpi.lazabus.ui.component.UbicacionActual
 import com.iua.gpi.lazabus.ui.viewmodel.TtsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
 
 // Definimos los colores principales para mantener la coherencia con el diseño de la captura
 val LazabusBlue = Color(0xFF1E88E5) // Un azul brillante para el app bar y el botón
@@ -61,18 +66,28 @@ fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(), sttviewmodel: SttV
         },
         content = { paddingValues ->
             val topPadding = paddingValues.calculateTopPadding()
+
+            val mapViewState = remember { mutableStateOf<MapView?>(null) }
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = topPadding)
                     .background(Color(0xFFF0F0F0)) // Fondo ligero para el resto de la pantalla
             ) {
-
                 UbicacionActual()
-
                 // Área del Mapa (grande con desplazamiento)
                 MapArea(
-                    modifier = Modifier.weight(1f).fillMaxWidth()
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    onMapReady = { mapViewState.value = it }
+                )
+
+                MapMarkers(
+                    mapView = mapViewState.value,
+                    coordinates = listOf(
+                        GeoPoint(-31.4201, -64.1888), // Córdoba centro
+                        GeoPoint(-31.415, -64.19),
+                        GeoPoint(-31.43, -64.185)
+                    )
                 )
 
                 Box(
