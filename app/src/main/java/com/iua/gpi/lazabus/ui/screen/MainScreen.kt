@@ -1,7 +1,18 @@
 package com.iua.gpi.lazabus.ui.screen
 
+import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,14 +40,16 @@ import com.iua.gpi.lazabus.ui.component.MapMarkers
 import com.iua.gpi.lazabus.ui.permission.MicPermissionRequest
 import com.iua.gpi.lazabus.ui.viewmodel.SttViewModel
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import com.iua.gpi.lazabus.interaction.manageInteraction
 import com.iua.gpi.lazabus.ui.permission.LocationPermissionRequest
+import com.iua.gpi.lazabus.ui.viewmodel.ButtonManagerViewModel
 import com.iua.gpi.lazabus.ui.viewmodel.GeocoderViewModel
+import com.iua.gpi.lazabus.ui.viewmodel.InteractionState
 import com.iua.gpi.lazabus.ui.viewmodel.LocationViewModel
 import com.iua.gpi.lazabus.ui.viewmodel.RutaViewModel
 import com.iua.gpi.lazabus.ui.viewmodel.TtsViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.osmdroid.views.MapView
 
 // Definimos los colores principales para mantener la coherencia con el diseño de la captura
@@ -48,16 +61,26 @@ fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(),
                 sttviewmodel: SttViewModel = hiltViewModel(),
                 geocoderViewModel: GeocoderViewModel = hiltViewModel(),
                 locationViewModel: LocationViewModel = hiltViewModel(),
-                rutaViewModel: RutaViewModel = hiltViewModel()) {
+                rutaViewModel: RutaViewModel = hiltViewModel(),
+                buttonManagerViewModel : ButtonManagerViewModel = hiltViewModel()) {
 
-    //permisos
+    //PERMISOS
     MicPermissionRequest()
     LocationPermissionRequest()
 
     val paradasMapa by rutaViewModel.paradasGeoPoints.collectAsState()
+    val currentInteractionState by buttonManagerViewModel.state.collectAsState()
+
+    val context = LocalContext.current // Obtenemos el contexto
 
     LaunchedEffect(Unit) {
-        manageInteraction(ttsviewModel,sttviewmodel,geocoderViewModel,locationViewModel,rutaViewModel)
+        manageInteraction(
+            ttsviewModel,
+            sttviewmodel,
+            geocoderViewModel,
+            locationViewModel,
+            rutaViewModel,
+            buttonManagerViewModel)
     }
 
     Scaffold(
@@ -121,19 +144,43 @@ fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(),
                     modifier = Modifier
                     .fillMaxWidth()
                     .background(LazabusBlue)
-                ) {   // Botón Grande de Comandos de Voz (parte inferior)
+                ) {   // Botón Grande de Comandos de Voz
+
+                    val icon: ImageVector = when (currentInteractionState) {
+                        InteractionState.AWAITING_CONFIRMATION -> Icons.Filled.PlayArrow
+                        InteractionState.PROCESSING -> Icons.Filled.Search
+                        InteractionState.SPEAKING -> Icons.Filled.Face
+                        InteractionState.LISTENING -> Icons.Filled.AccountCircle
+                        else -> Icons.Filled.PlayArrow
+                    }
+
                     VoiceActionButton(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom =  paddingValues.calculateBottomPadding()),
-                        onClick = {    rutaViewModel.calcularRutaOptima(-31.412684894741222,-64.20055023585927,-31.4328235977395, -64.27699975384215,{})
-                        }
-                    )
+                        onClick = {
+                            buttonManagerViewModel.confirmInteraction()
+                            vibrar(context)
+                                  },
+                        imageVector  = icon)
 
                 }
             }
         }
     )
+}
+fun vibrar(context : Context)
+{
+    val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        // Vibración moderna (a partir de Android 8.0)
+        vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE))
+    } else {
+        // Vibración de soporte para versiones antiguas
+        @Suppress("DEPRECATION")
+        vibrator.vibrate(100)
+    }
 }
 
 

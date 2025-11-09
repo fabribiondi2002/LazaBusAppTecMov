@@ -15,6 +15,8 @@ class SttViewModel @Inject constructor(
     val uiText: StateFlow<String> = sstService.recognizedText
     val isListening: StateFlow<Boolean> = sstService.isListening
 
+    val recognitionError: StateFlow<Boolean> = sstService.recognitionError
+
     fun startVoiceInput() {
         sstService.startListening()
     }

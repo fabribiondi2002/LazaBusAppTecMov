@@ -98,6 +98,16 @@ fun MapMarkers(
         )
         mapView.overlays.add(pointsOverlay)
 
+        // *** LÓGICA AGREGADA PARA CENTRAR EL MAPA EN LA RUTA ***
+
+        // Crear un BoundingBox a partir de los puntos
+        val boundingBox = org.osmdroid.util.BoundingBox.fromGeoPoints(coordinates)
+
+        // Centrar el mapa y ajustar el zoom a la caja delimitadora
+        // El 'padding' (por ejemplo, 100) es el espacio en píxeles que quieres dejar
+        // como margen alrededor de la ruta para que no toque los bordes de la pantalla.
+        mapView.zoomToBoundingBox(boundingBox, true, 100)
+
         // Forzar redibujado
         mapView.invalidate()
     }
