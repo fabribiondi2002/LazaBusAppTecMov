@@ -87,8 +87,10 @@ suspend fun manageInteraction(
 
 
     rutaViewModel.calcularRutaOptima(
-        origen?.latitude ?: -31.4126,
-        origen?.longitude ?: -64.2005,
+//        origen?.latitude ?: -31.4126,
+//        origen?.longitude ?: -64.2005,
+        -31.4126,
+        -64.2005,
         destino.latitude,
         destino.longitude,
         { e ->

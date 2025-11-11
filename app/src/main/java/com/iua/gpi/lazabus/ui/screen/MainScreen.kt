@@ -129,16 +129,16 @@ fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(),
                     coordinates = paradasMapa
                 )
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(LazabusBlue)
-                ) {
-                    DestinoArea(
-                        destino = "Plaza San Martín",
-                        modifier = Modifier.align(Alignment.TopCenter)
-                    )
-                }
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .background(LazabusBlue)
+//                ) {
+//                    DestinoArea(
+//                        destino = "Plaza San Martín",
+//                        modifier = Modifier.align(Alignment.TopCenter)
+//                    )
+//                }
 
                 Box(
                     modifier = Modifier
