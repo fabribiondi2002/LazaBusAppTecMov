@@ -1,16 +1,27 @@
 package com.iua.gpi.lazabus.ui.screen
 
+import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 
 import androidx.compose.runtime.collectAsState
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,14 +40,16 @@ import com.iua.gpi.lazabus.ui.component.MapMarkers
 import com.iua.gpi.lazabus.ui.permission.MicPermissionRequest
 import com.iua.gpi.lazabus.ui.viewmodel.SttViewModel
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import com.iua.gpi.lazabus.interaction.manageInteraction
 import com.iua.gpi.lazabus.ui.permission.LocationPermissionRequest
+import com.iua.gpi.lazabus.ui.viewmodel.ButtonManagerViewModel
 import com.iua.gpi.lazabus.ui.viewmodel.GeocoderViewModel
+import com.iua.gpi.lazabus.ui.viewmodel.InteractionState
 import com.iua.gpi.lazabus.ui.viewmodel.LocationViewModel
 import com.iua.gpi.lazabus.ui.viewmodel.RutaViewModel
 import com.iua.gpi.lazabus.ui.viewmodel.TtsViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 
 // Definimos los colores principales para mantener la coherencia con el diseño de la captura
@@ -48,16 +61,27 @@ fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(),
                 sttviewmodel: SttViewModel = hiltViewModel(),
                 geocoderViewModel: GeocoderViewModel = hiltViewModel(),
                 locationViewModel: LocationViewModel = hiltViewModel(),
-                rutaViewModel: RutaViewModel = hiltViewModel()) {
+                rutaViewModel: RutaViewModel = hiltViewModel(),
+                buttonManagerViewModel : ButtonManagerViewModel = hiltViewModel()) {
 
-    //permisos
+    //PERMISOS
     MicPermissionRequest()
     LocationPermissionRequest()
 
-    val currentLocation by locationViewModel.currentLocation.collectAsState()
     val paradasMapa by rutaViewModel.paradasGeoPoints.collectAsState()
+    val currentInteractionState by buttonManagerViewModel.state.collectAsState()
 
-    val scope = rememberCoroutineScope()
+    val context = LocalContext.current // Obtenemos el contexto
+
+    LaunchedEffect(Unit) {
+        manageInteraction(
+            ttsviewModel,
+            sttviewmodel,
+            geocoderViewModel,
+            locationViewModel,
+            rutaViewModel,
+            buttonManagerViewModel)
+    }
 
     Scaffold(
         topBar = {
@@ -105,39 +129,58 @@ fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(),
                     coordinates = paradasMapa
                 )
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(LazabusBlue)
-                ) {
-                    DestinoArea(
-                        destino = "Plaza San Martín",
-                        modifier = Modifier.align(Alignment.TopCenter)
-                    )
-                }
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .background(LazabusBlue)
+//                ) {
+//                    DestinoArea(
+//                        destino = "Plaza San Martín",
+//                        modifier = Modifier.align(Alignment.TopCenter)
+//                    )
+//                }
 
                 Box(
                     modifier = Modifier
                     .fillMaxWidth()
                     .background(LazabusBlue)
-                ) {   // Botón Grande de Comandos de Voz (parte inferior)
+                ) {   // Botón Grande de Comandos de Voz
+
+                    val icon: ImageVector = when (currentInteractionState) {
+                        InteractionState.AWAITING_CONFIRMATION -> Icons.Filled.PlayArrow
+                        InteractionState.PROCESSING -> Icons.Filled.Search
+                        InteractionState.SPEAKING -> Icons.Filled.Face
+                        InteractionState.LISTENING -> Icons.Filled.AccountCircle
+                        else -> Icons.Filled.PlayArrow
+                    }
+
                     VoiceActionButton(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom =  paddingValues.calculateBottomPadding()),
-                        onClick = {scope.launch {
-                            sttviewmodel.startVoiceInput()
-                            delay(5000)
-                            sttviewmodel.stopVoiceInput()
-                            ttsviewModel.hablar(sttviewmodel.uiText.value)
-                            geocoderViewModel.buscarUbicacion(sttviewmodel.uiText.value)
-                        }}
-                    )
+                        onClick = {
+                            buttonManagerViewModel.confirmInteraction()
+                            vibrar(context)
+                                  },
+                        imageVector  = icon)
 
                 }
             }
         }
     )
+}
+fun vibrar(context : Context)
+{
+    val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        // Vibración moderna (a partir de Android 8.0)
+        vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE))
+    } else {
+        // Vibración de soporte para versiones antiguas
+        @Suppress("DEPRECATION")
+        vibrator.vibrate(100)
+    }
 }
 
 

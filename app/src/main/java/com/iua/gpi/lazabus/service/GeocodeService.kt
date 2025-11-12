@@ -7,11 +7,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.Locale
+import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class GeocodeService (
-    private val context: Context
+class GeocodeService @Inject constructor(
+     private val context: Context
 ) : GeocodeServiceI {
 
     override suspend fun getCoordinatesForLocation(locationName: String): Result<Address> {

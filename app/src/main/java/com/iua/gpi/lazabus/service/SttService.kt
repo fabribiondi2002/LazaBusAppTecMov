@@ -29,6 +29,9 @@ class SttService (private val context: Context
     private val _isListening = MutableStateFlow(false)
     override val isListening: StateFlow<Boolean> = _isListening.asStateFlow()
 
+    private val _recognitionError = MutableStateFlow(false)
+    override val recognitionError: StateFlow<Boolean> = _recognitionError.asStateFlow()
+
     init {
         speechRecognizer.setRecognitionListener(this)
     }
@@ -56,6 +59,7 @@ class SttService (private val context: Context
     // Cuando el servicio está listo para recibir voz.
     override fun onReadyForSpeech(params: Bundle?) {
         _recognizedText.value = "" // Limpiamos el texto anterior al comenzar una nueva sesión
+        _recognitionError.value= false
         Log.d(TAG, "Micrófono listo para hablar.")
     }
 
@@ -95,7 +99,9 @@ class SttService (private val context: Context
         val errorMessage = getErrorText(error)
 
         // Notificamos el error al ViewModel o UI (puedes usar otro StateFlow para errores)
-        _recognizedText.value = "Error: $errorMessage"
+        _recognizedText.value = ""
+        _recognitionError.value=true
+
         Log.e(TAG, "Error de reconocimiento: $errorMessage ($error)")
     }
 

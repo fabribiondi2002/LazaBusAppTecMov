@@ -36,7 +36,7 @@ class LocationService (private val context: Context
         // Escucha nuevas actualizaciones
         val listener = object : LocationListener {
             override fun onLocationChanged(location: Location) {
-                Log.i(TAG, "Nueva ubicación → Lat: ${location.latitude} Lon: ${location.longitude}")
+               // Log.i(TAG, "Nueva ubicación → Lat: ${location.latitude} Lon: ${location.longitude}")
                 trySend(location) // Envía la nueva ubicación al Flow
             }
             override fun onProviderEnabled(provider: String) {}

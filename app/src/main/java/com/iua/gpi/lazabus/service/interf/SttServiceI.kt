@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.StateFlow
 interface SttServiceI {
     val recognizedText: StateFlow<String>
     val isListening: StateFlow<Boolean>
+    val recognitionError : StateFlow<Boolean>
     fun startListening()
     fun stopListening()
 }
