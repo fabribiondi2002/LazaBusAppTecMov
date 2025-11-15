@@ -24,44 +24,53 @@ class LocationService (private val context: Context
 
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-        // Intenta obtener la última ubicación conocida al iniciar el Flow
+        // 🔥 CHECK DE PERMISOS ANTES DE TOCAR EL LOCATION MANAGER
+        val fine = android.content.pm.PackageManager.PERMISSION_GRANTED ==
+                androidx.core.content.ContextCompat.checkSelfPermission(
+                    context, android.Manifest.permission.ACCESS_FINE_LOCATION
+                )
+
+        val coarse = android.content.pm.PackageManager.PERMISSION_GRANTED ==
+                androidx.core.content.ContextCompat.checkSelfPermission(
+                    context, android.Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+
+        if (!fine && !coarse) {
+            Log.e(TAG, "No hay permisos de ubicación → deteniendo flujo")
+            trySend(null)
+            close()     // Cierra el flow para evitar más llamadas
+            return@callbackFlow
+        }
+
+        // Última ubicación conocida
         val ultima = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
             ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
 
-        if (ultima != null) {
-            Log.i(TAG, "Última ubicación conocida → Lat: ${ultima.latitude} Lon: ${ultima.longitude}")
-            trySend(ultima)
-        }
+        if (ultima != null) trySend(ultima)
 
-        // Escucha nuevas actualizaciones
         val listener = object : LocationListener {
             override fun onLocationChanged(location: Location) {
-               // Log.i(TAG, "Nueva ubicación → Lat: ${location.latitude} Lon: ${location.longitude}")
-                trySend(location) // Envía la nueva ubicación al Flow
+                trySend(location)
             }
-            override fun onProviderEnabled(provider: String) {}
-            override fun onProviderDisabled(provider: String) {}
         }
 
         val provider = when {
-            locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) -> LocationManager.GPS_PROVIDER
-            locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) -> LocationManager.NETWORK_PROVIDER
+            locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ->
+                LocationManager.GPS_PROVIDER
+            locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ->
+                LocationManager.NETWORK_PROVIDER
             else -> null
         }
 
         if (provider != null) {
-            Log.i(TAG, "Escuchando actualizaciones del proveedor: $provider")
-            // Solicita actualizaciones: cada 5 segundos (5000L) o 0 metros de distancia
             locationManager.requestLocationUpdates(provider, 5000L, 0f, listener)
         } else {
-            Log.w(TAG, "No hay proveedores de ubicación activos")
-            trySend(null) // Envía null si no hay proveedores
+            trySend(null)
         }
 
-        // Cleanup: Esto se ejecuta cuando el Flow deja de ser observado (ej. ViewModel se limpia)
         awaitClose {
-            Log.d(TAG, "Deteniendo actualizaciones de ubicación")
             locationManager.removeUpdates(listener)
         }
     }.distinctUntilChanged()
+
 }

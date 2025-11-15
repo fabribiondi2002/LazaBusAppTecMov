@@ -62,53 +62,71 @@ class PointsOverlay(
 fun MapMarkers(
     mapView: MapView?,
     coordinates: List<GeoPoint>,
+    origen: GeoPoint?,
+    destino: GeoPoint?,
     radiusPx: Float = 20f,
     fillColor: Int = Color.RED,
     strokeColor: Int = Color.WHITE,
     strokeWidthPx: Float = 2f
 ) {
-    LaunchedEffect(mapView, coordinates) {
+    val colorRuta = Color.parseColor("#0072B2")     // Azul
+    val colorOrigen = Color.parseColor("#E69F00")   // Naranja
+    val colorDestino = Color.parseColor("#CC79A7")  // Magenta
+    LaunchedEffect(mapView, coordinates, origen, destino) {
+
         if (mapView == null) return@LaunchedEffect
 
-        // breve espera para asegurar que MapView esté montado
         delay(200)
 
-        // Eliminar overlays anteriores del tipo PointsOverlay
-        val iterator = mapView.overlays.iterator()
-        while (iterator.hasNext()) {
-            val ov = iterator.next()
-            if (ov is PointsOverlay) {
-                iterator.remove()
-            }
+        val toRemove = mapView.overlays.filterIsInstance<PointsOverlay>()
+        mapView.overlays.removeAll(toRemove)
+
+        // ================================
+        //    OVERLAY DE LA RUTA
+        // ================================
+        if (coordinates.isNotEmpty()) {
+            val pointsOverlay = PointsOverlay(
+                points = coordinates,
+                radiusPx = radiusPx,
+                fillColor = colorRuta,
+                strokeColor = strokeColor,
+                strokeWidthPx = strokeWidthPx
+            )
+            mapView.overlays.add(pointsOverlay)
+
+            val boundingBox = org.osmdroid.util.BoundingBox.fromGeoPoints(coordinates)
+            mapView.zoomToBoundingBox(boundingBox, true, 100)
         }
 
-        // Si no hay coordenadas, solo invalidamos y salimos
-        if (coordinates.isEmpty()) {
-            mapView.invalidate()
-            return@LaunchedEffect
+        // ================================
+        //    ORIGEN
+        // ================================
+        origen?.let {
+            val overlayOrigen = PointsOverlay(
+                points = listOf(it),
+                radiusPx = radiusPx * 1.2f,
+                fillColor = colorOrigen,
+                strokeColor = Color.WHITE,
+                strokeWidthPx = 4f
+            )
+            mapView.overlays.add(overlayOrigen)
         }
 
-        // Agregar nuestro overlay personalizado con los puntos
-        val pointsOverlay = PointsOverlay(
-            points = coordinates,
-            radiusPx = radiusPx,
-            fillColor = fillColor,
-            strokeColor = strokeColor,
-            strokeWidthPx = strokeWidthPx
-        )
-        mapView.overlays.add(pointsOverlay)
+        // ================================
+        //    DESTINO
+        // ================================
+        destino?.let {
+            val overlayDestino = PointsOverlay(
+                points = listOf(it),
+                radiusPx = radiusPx * 1.2f,
+                fillColor = colorDestino,
+                strokeColor = Color.WHITE,
+                strokeWidthPx = 4f
+            )
+            mapView.overlays.add(overlayDestino)
+        }
 
-        // *** LÓGICA AGREGADA PARA CENTRAR EL MAPA EN LA RUTA ***
-
-        // Crear un BoundingBox a partir de los puntos
-        val boundingBox = org.osmdroid.util.BoundingBox.fromGeoPoints(coordinates)
-
-        // Centrar el mapa y ajustar el zoom a la caja delimitadora
-        // El 'padding' (por ejemplo, 100) es el espacio en píxeles que quieres dejar
-        // como margen alrededor de la ruta para que no toque los bordes de la pantalla.
-        mapView.zoomToBoundingBox(boundingBox, true, 100)
-
-        // Forzar redibujado
         mapView.invalidate()
     }
 }
+
