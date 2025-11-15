@@ -71,11 +71,13 @@ suspend fun manageInteraction(
 
     val origen = locationViewModel.currentLocation.value
     Log.i(TAG," origen " + origen?.latitude)
-
+    locationViewModel.setOrigen(origen?.latitude ?: -31.4126, origen?.longitude ?: -64.2005,)
 
     val textoDestinoLimpio = normalize(textoDestino)
     Log.i(TAG, "texto limpio" + textoDestinoLimpio)
     geocoderViewModel.buscarUbicacion(textoDestinoLimpio)
+
+
 
     var destino = geocoderViewModel.geocoderState.value.location
     while(destino == null)
@@ -84,13 +86,11 @@ suspend fun manageInteraction(
         destino = geocoderViewModel.geocoderState.value.location
         Log.i(TAG," no se encontro destino ")
     }
-
+    locationViewModel.setDestino(destino.latitude, destino.longitude)
 
     rutaViewModel.calcularRutaOptima(
-//        origen?.latitude ?: -31.4126,
-//        origen?.longitude ?: -64.2005,
-        -31.4126,
-        -64.2005,
+        origen?.latitude ?: -31.4126,
+        origen?.longitude ?: -64.2005,
         destino.latitude,
         destino.longitude,
         { e ->

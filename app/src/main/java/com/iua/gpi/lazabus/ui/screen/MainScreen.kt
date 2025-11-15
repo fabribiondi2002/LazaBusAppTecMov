@@ -69,6 +69,11 @@ fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(),
     LocationPermissionRequest()
 
     val paradasMapa by rutaViewModel.paradasGeoPoints.collectAsState()
+    val origen = locationViewModel.origenGeoPoint.collectAsState().value
+    val destino = locationViewModel.destinoGeoPoint.collectAsState().value
+
+
+
     val currentInteractionState by buttonManagerViewModel.state.collectAsState()
 
     val context = LocalContext.current // Obtenemos el contexto
@@ -126,7 +131,9 @@ fun MainScreen( ttsviewModel: TtsViewModel = hiltViewModel(),
 
                 MapMarkers(
                     mapView = mapViewState.value,
-                    coordinates = paradasMapa
+                    coordinates = paradasMapa,
+                    origen = origen,
+                    destino = destino
                 )
 
 //                Box(
