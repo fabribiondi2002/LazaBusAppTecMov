@@ -4,12 +4,16 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.iua.gpi.lazabus.data.local.dao.RutaDao
-import com.iua.gpi.lazabus.data.local.entity.RuntaEntity
+import com.iua.gpi.lazabus.data.local.dao.ViajeDao
+import com.iua.gpi.lazabus.data.local.entity.ViajeEntity
 
-@Database(entities = [RuntaEntity::class], version = 1, exportSchema = false)
+@Database(
+    entities = [ViajeEntity::class],
+    version = 1,
+    exportSchema = false
+)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun rutaDao(): RutaDao
+    abstract fun viajeDao(): ViajeDao
 
     companion object {
         @Volatile
@@ -17,11 +21,15 @@ abstract class AppDatabase : RoomDatabase() {
 
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
+
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "item_database"
-                ).build()
+                    "lazabus_db"
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
+
                 INSTANCE = instance
                 instance
             }

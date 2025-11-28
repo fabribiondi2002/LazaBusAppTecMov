@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.iua.gpi.lazabus.ui.screen.LazabusBlue
+import com.iua.gpi.lazabus.ui.theme.LazabusBlue
 
 @Composable
 fun DestinoArea(

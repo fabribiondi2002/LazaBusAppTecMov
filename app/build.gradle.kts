@@ -80,6 +80,9 @@ dependencies {
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
 
+    kapt("androidx.room:room-compiler:2.6.1")
+
+
     //compose navigation
     implementation("androidx.navigation:navigation-compose:2.7.5") // Versión actual
 
