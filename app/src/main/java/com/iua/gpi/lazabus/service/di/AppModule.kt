@@ -1,6 +1,9 @@
 package com.iua.gpi.lazabus.service.di
 
 import android.content.Context
+import androidx.room.Room
+import com.iua.gpi.lazabus.data.local.AppDatabase
+import com.iua.gpi.lazabus.data.local.dao.ViajeDao
 import com.iua.gpi.lazabus.service.GeocodeService
 import com.iua.gpi.lazabus.service.LocationService
 import com.iua.gpi.lazabus.service.SttService
@@ -52,5 +55,20 @@ object AppModule {
     fun provideLocationService(@ApplicationContext context: Context): LocationServiceI {
         return LocationService(context)
     }
+
+    @Provides
+    @Singleton
+    fun provideDatabase(context: Context): AppDatabase {
+        return Room.databaseBuilder(
+            context.applicationContext,
+            AppDatabase::class.java,
+            "lazabus_db"
+        )
+            .fallbackToDestructiveMigration()
+            .build()
+    }
+
+    @Provides
+    fun provideViajeDao(db: AppDatabase): ViajeDao = db.viajeDao()
 
 }

@@ -5,7 +5,7 @@ sealed class Route(val route: String) {
     object SplashRoute : Route("splash")
     object GreetingRoute : Route("greeting_screen")
     object MainRoute : Route ("main_screen")
-
+    object HistorialRoute : Route("historial")
     /**
     // Pantalla con argumento obligatorio
     data class Detail(val userId: String) : Screen("detail_screen/{userId}") {
