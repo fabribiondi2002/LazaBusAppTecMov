@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iua.gpi.lazabus.service.interf.TtsServiceI
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -15,6 +16,9 @@ class TtsViewModel @Inject constructor(
     // @Inject para que Hilt sepa que debe pasarle la dependencia.
     private val ttsService: TtsServiceI
 ) : ViewModel(){
+
+    private val _speed = MutableStateFlow(ttsService.getSpeed())
+    val speed: StateFlow<Float> = _speed
 
     init {
         // Inicializa el servicio tan pronto como se crea el ViewModel
@@ -49,6 +53,11 @@ class TtsViewModel @Inject constructor(
         }
     }
 
+
+    fun updateSpeed(newSpeed: Float) {
+        _speed.value = newSpeed
+        ttsService.setSpeed(newSpeed)
+    }
     /** Llama a shutdown() cuando el ViewModel se destruye. */
     override fun onCleared() {
         ttsService.shutdown()

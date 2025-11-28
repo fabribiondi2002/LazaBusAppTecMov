@@ -4,21 +4,25 @@ import android.content.Context
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import com.iua.gpi.lazabus.service.interf.TtsServiceI
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.Locale
 import javax.inject.Inject
+import com.iua.gpi.lazabus.data.AppPreferences
 
 
-class TtsService(private val context: Context // Usamos Application Context
+class TtsService @Inject constructor(
+    private val context: Context,
+    private val prefs: AppPreferences
+
 ) : TtsServiceI, TextToSpeech.OnInitListener {
 
     private var tts: TextToSpeech? = null
 
     private val _isMotorReady = MutableStateFlow(false)
     override val isMotorReady: StateFlow<Boolean> = _isMotorReady.asStateFlow()
+    private var currentSpeed: Float = prefs.getSpeed()
 
     override var isInitialized: Boolean = false
         private set
@@ -37,9 +41,9 @@ class TtsService(private val context: Context // Usamos Application Context
 
                 // AJUSTE DE VELOCIDAD (Para que hable más PAUSADO)
                 // 1.0f es la velocidad normal. Prueba con 0.8f o 0.7f para ir más lento.
-                val speechRate = 0.8f
-                tts?.setSpeechRate(speechRate)
-                Log.i("TTS", "Velocidad de habla ajustada a: $speechRate")
+
+                tts?.setSpeechRate(currentSpeed)
+                Log.i("TTS", "Velocidad de habla ajustada a: $currentSpeed")
 
                 // AJUSTE DE TONO
                 // 1.0f es el tono normal. Prueba con 1.1f o 0.9f para experimentar.
@@ -65,6 +69,15 @@ class TtsService(private val context: Context // Usamos Application Context
             Log.w("TTS", "TTS no inicializado, omitiendo la función speak().")
         }
     }
+
+    override fun setSpeed(speed: Float) {
+        currentSpeed = speed
+        prefs.saveSpeed(speed)
+        tts?.setSpeechRate(speed)
+        Log.i("TTS", "Velocidad del TTS actualizada: $speed")
+    }
+
+    override fun getSpeed(): Float = currentSpeed
 
     override fun shutdown() {
         tts?.stop()

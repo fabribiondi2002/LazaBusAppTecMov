@@ -129,5 +129,8 @@ class SttService (private val context: Context
     // Métodos menos comunes que se deben implementar
     override fun onBufferReceived(buffer: ByteArray?) { /* Ignorado en la mayoría de los casos */ }
     override fun onEvent(eventType: Int, params: Bundle?) { /* Ignorado en la mayoría de los casos */ }
-
+    override fun reset() {
+        _recognizedText.value = ""
+        _recognitionError.value = false
+    }
 }

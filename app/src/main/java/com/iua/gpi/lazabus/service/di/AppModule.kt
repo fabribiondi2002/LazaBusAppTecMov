@@ -2,6 +2,7 @@ package com.iua.gpi.lazabus.service.di
 
 import android.content.Context
 import androidx.room.Room
+import com.iua.gpi.lazabus.data.AppPreferences
 import com.iua.gpi.lazabus.data.local.AppDatabase
 import com.iua.gpi.lazabus.data.local.dao.ViajeDao
 import com.iua.gpi.lazabus.service.GeocodeService
@@ -34,9 +35,9 @@ object AppModule {
     // con el ApplicationContext.
     @Provides
     @Singleton
-    fun provideTtsService(@ApplicationContext context: Context): TtsServiceI {
+    fun provideTtsService(@ApplicationContext context: Context, prefs: AppPreferences): TtsServiceI {
         // Usar AndroidTtsService y hacer que viva mientras viva la app (Singleton)
-        return TtsService(context)
+        return TtsService(context, prefs)
     }
 
     @Provides

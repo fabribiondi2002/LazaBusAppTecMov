@@ -8,4 +8,5 @@ interface SttServiceI {
     val recognitionError : StateFlow<Boolean>
     fun startListening()
     fun stopListening()
+    fun reset()
 }

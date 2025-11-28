@@ -30,4 +30,8 @@ class SttViewModel @Inject constructor(
         sstService.stopListening()
         super.onCleared()
     }
+
+    fun reset() {
+        sstService.reset()
+    }
 }
