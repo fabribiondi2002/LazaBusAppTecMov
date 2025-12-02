@@ -12,7 +12,8 @@ enum class InteractionState {
     SPEAKING,           // El sistema está hablando (ej: "Bienvenido...")
     LISTENING,          // El sistema está escuchando la respuesta del usuario
     AWAITING_CONFIRMATION, // El flujo está pausado, esperando el clic del botón (ej: "¿Es correcto?")
-    PROCESSING          // El sistema está buscando/calculando la ruta
+    PROCESSING,          // El sistema está buscando/calculando la ruta
+    AWAITING_RESTART_CONFIRMATION // El sistema está esperando la confirmación de reiniciar el flujo
 }
 
 @HiltViewModel
@@ -31,14 +32,13 @@ class ButtonManagerViewModel @Inject constructor() : ViewModel() {
     }
 
     // El método suspendido que PAUSA la corrutina de manageInteraction.
-    suspend fun awaitConfirmation(): Boolean {
+    suspend fun awaitConfirmation(state: InteractionState = InteractionState.AWAITING_CONFIRMATION): Boolean {
         // Prepara la promesa
         val deferred = CompletableDeferred<Boolean>()
         confirmationDeferred = deferred
 
         // Setea el estado para la UI (cambia el ícono a "Check")
-        _state.value = InteractionState.AWAITING_CONFIRMATION
-
+        _state.value = state
         // SUSPENDE la corrutina hasta que se presione el botón
         val result = deferred.await()
 
@@ -52,5 +52,11 @@ class ButtonManagerViewModel @Inject constructor() : ViewModel() {
         // Completa la promesa con TRUE para reanudar manageInteraction
         confirmationDeferred?.complete(true)
     }
+    fun reset() {
+        confirmationDeferred?.cancel()
+        confirmationDeferred = null
+        _state.value = InteractionState.IDLE
+    }
+
 
 }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,8 +59,9 @@ fun MainScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    var isRestart by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(isRestart) {
         manageInteraction(
             ttsviewModel,
             sttviewmodel,
@@ -68,11 +70,21 @@ fun MainScreen(
             rutaViewModel,
             buttonManagerViewModel,
             viajeViewModel,
+            isRestart
         )
+
+        // Esperamos si el usuario quiere reiniciar
+        if (buttonManagerViewModel.state.value == InteractionState.AWAITING_RESTART_CONFIRMATION) {
+            val restart = buttonManagerViewModel.awaitConfirmation(InteractionState.AWAITING_RESTART_CONFIRMATION)
+            if (restart) {
+                isRestart = true // Esto relanza el LaunchedEffect
+            }
+        }
     }
     DisposableEffect(Unit) {
         onDispose {
             rutaViewModel.finalizarViaje()
+            locationViewModel.clearLocation()
 
         }
     }
@@ -117,6 +129,34 @@ fun MainScreen(
                         Icon(Icons.Default.DateRange, contentDescription = "Historial")
                     }
                 )
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                )
+
+
+                Text(
+                    "Configuración de voz",
+                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                val speed by ttsviewModel.speed.collectAsState()
+
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Text("Velocidad de lectura: ${String.format("%.2f", speed)}x")
+
+                    Slider(
+                        value = speed,
+                        onValueChange = { newSpeed ->
+                            ttsviewModel.updateSpeed(newSpeed)
+                        },
+                        valueRange = 0.5f..1.5f,
+                        steps = 5
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
             }
         }
     ) {
@@ -191,7 +231,8 @@ fun MainScreen(
                             InteractionState.PROCESSING -> Icons.Filled.Search
                             InteractionState.SPEAKING -> Icons.Filled.Face
                             InteractionState.LISTENING -> Icons.Filled.AccountCircle
-                            else -> Icons.Filled.PlayArrow
+                            InteractionState.AWAITING_RESTART_CONFIRMATION -> Icons.Filled.Refresh
+                            else -> Icons.Filled.Warning
                         }
 
                         VoiceActionButton(

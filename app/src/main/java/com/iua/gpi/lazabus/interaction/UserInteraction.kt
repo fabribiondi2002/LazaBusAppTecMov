@@ -30,17 +30,23 @@ suspend fun manageInteraction(
     locationViewModel: LocationViewModel,
     rutaViewModel: RutaViewModel,
     buttonManagerViewModel: ButtonManagerViewModel,
-    viajeViewModel: ViajeViewModel
+    viajeViewModel: ViajeViewModel,
+    isRestart: Boolean = false
 
 )
 {
-    buttonManagerViewModel.updateState(InteractionState.SPEAKING)
-    ttsviewModel.hablar("Bienvenido a Laza Bus, presiona la parte inferior de tu pantalla para comenzar")
-    buttonManagerViewModel.updateState(InteractionState.AWAITING_CONFIRMATION)
-    delay(SPEACH_WAIT_TIME)
 
-    buttonManagerViewModel.awaitConfirmation()
 
+
+    if (!isRestart) {
+        buttonManagerViewModel.updateState(InteractionState.SPEAKING)
+        ttsviewModel.hablar("Bienvenido a Laza Bus, presiona la parte inferior de tu pantalla para comenzar")
+        delay(SPEACH_WAIT_TIME)
+        buttonManagerViewModel.reset()
+        buttonManagerViewModel.updateState(InteractionState.AWAITING_CONFIRMATION)
+        buttonManagerViewModel.awaitConfirmation()
+
+    }
     buttonManagerViewModel.updateState(InteractionState.SPEAKING)
     ttsviewModel.hablar("¿A dónde te interesaría ir hoy?")
     delay(SPEACH_SHORT_WAIT_TIME)
@@ -120,14 +126,29 @@ suspend fun manageInteraction(
         paradaOrigen = paradaOrigen,
         paradaDestino = paradaDestino
     )
-
+    buttonManagerViewModel.updateState(InteractionState.SPEAKING)
     Log.i(TAG,"La mejor ruta, en base a tu ubicación actual y el destino deseado es la ruta $nombreRuta de la empresa $empresaRuta, la parada mas cercana a tu ubicacion esta a $distanciaOrigen metros en $paradaOrigen, te tendras que bajar en la parada $paradaDestino que esta a $distanciaDestino metros de $textoDestino")
-
     ttsviewModel.hablar(
         "La mejor ruta, en base a tu ubicación actual y el destino deseado es la ruta ${nombreRuta}" +
                 " de la empresa $empresaRuta, la parada mas cercana a tu ubicacion esta a" + String.format("%.0f", distanciaOrigen * 1000) +
                 " metros en $paradaOrigen, te tendras que bajar en la parada $paradaDestino que esta a " +
-                String.format("%.0f", distanciaDestino * 1000) + " metros de $textoDestino"
+                String.format("%.0f", distanciaDestino * 1000) + " metros de $textoDestino. Si desea realizar una nueva consulta presione la parte inferior para comenzar de nuevo"
     )
+
+    delay(SPEACH_LONG_WAIT_TIME)
+    buttonManagerViewModel.updateState(InteractionState.AWAITING_RESTART_CONFIRMATION)
+// Cambiamos a estado de reinicio
+
+// Esperamos a que el usuario toque el botón
+    val restart = buttonManagerViewModel.awaitConfirmation( InteractionState.AWAITING_RESTART_CONFIRMATION)
+
+    if (restart) {
+        sttviewmodel.reset()
+        rutaViewModel.finalizarViaje()
+        locationViewModel.clearLocation()
+        Log.i(TAG, "Usuario reinició la interacción")
+        return
+    }
+
 
 }

@@ -94,7 +94,7 @@ fun HistorialScreen(
                             // Ruta
                             Text(
                                 text = viaje.ruta.uppercase(),
-                                fontSize = 18.sp,
+                                fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
                             )
@@ -104,6 +104,7 @@ fun HistorialScreen(
                             // Descripción
                             Text(
                                 text = viaje.descripcionRuta,
+                                fontSize = 18.sp,
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis,
                                 color = Color.White.copy(alpha = 0.9f)
@@ -113,12 +114,12 @@ fun HistorialScreen(
 
                             // Origen y destino
                             Text(
-                                text = "🟢 Origen: ${viaje.origen}",
+                                text = "Origen: ${viaje.origen}",
                                 fontWeight = FontWeight.Medium,
                                 color = Color.White
                             )
                             Text(
-                                text = "🔵 Destino: ${viaje.destino}",
+                                text = "Destino: ${viaje.destino}",
                                 fontWeight = FontWeight.Medium,
                                 color = Color.White
                             )
@@ -126,8 +127,8 @@ fun HistorialScreen(
                             Spacer(modifier = Modifier.height(12.dp))
 
                             // Paradas
-                            Text("🚏 Parada origen: ${viaje.paradaOrigen}", color = Color.White)
-                            Text("🚏 Parada destino: ${viaje.paradaDestino}", color = Color.White)
+                            Text("Parada origen: ${viaje.paradaOrigen}", color = Color.White)
+                            Text("Parada destino: ${viaje.paradaDestino}", color = Color.White)
                         }
                     }
                 }

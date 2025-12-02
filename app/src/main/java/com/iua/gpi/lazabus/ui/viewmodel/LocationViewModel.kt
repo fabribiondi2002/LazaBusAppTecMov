@@ -70,4 +70,9 @@ class LocationViewModel @Inject constructor(
 
         }
     }
+    fun clearLocation() {
+        _currentLocation.value = null
+        _destinoGeoPoint.value = null
+        _origenGeoPoint.value = null
+    }
 }
