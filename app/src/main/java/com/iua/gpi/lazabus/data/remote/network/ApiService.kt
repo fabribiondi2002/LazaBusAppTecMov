@@ -7,7 +7,9 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-
+/**
+* Interfaz que define los endpoints del API REST.
+ */
 interface ApiService {
     @GET(ApiRoutes.PARADA)
     fun getParadas(): Call<List<Parada>>
@@ -24,13 +26,4 @@ interface ApiService {
         @Query("dlat") dlat: Double,
         @Query("dlng") dlng: Double
     ): Call<RutaOptima>
-    @GET("${ApiRoutes.RUTA}/calcular-rutas")
-    fun calcularRutas(
-        @Query("olat") olat: Double,
-        @Query("olng") olng: Double,
-        @Query("dlat") dlat: Double,
-        @Query("dlng") dlng: Double
-    ): Call<List<Ruta>>
-
-
 }

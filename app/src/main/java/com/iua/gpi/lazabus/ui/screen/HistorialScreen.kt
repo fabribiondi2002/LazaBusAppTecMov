@@ -12,14 +12,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.iua.gpi.lazabus.R
 import com.iua.gpi.lazabus.ui.viewmodel.ViajeViewModel
 import com.iua.gpi.lazabus.ui.theme.LazabusBlue
 
+/**
+ * Composable de la pantalla de historial de viajes.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HistorialScreen(
@@ -31,12 +36,12 @@ fun HistorialScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Historial de Viajes", color = Color.White) },
+                title = { Text(stringResource(R.string.menu_history), color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver",
+                            contentDescription = stringResource(R.string.back),
                             tint = Color.White
                         )
                     }
@@ -45,7 +50,7 @@ fun HistorialScreen(
                     IconButton(onClick = { viajeViewModel.limpiarHistorial() }) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Limpiar historial",
+                            contentDescription = stringResource(R.string.clear_history),
                             tint = Color.White
                         )
                     }
@@ -65,7 +70,7 @@ fun HistorialScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "No hay viajes registrados aún",
+                    text = stringResource(R.string.no_history),
                     style = MaterialTheme.typography.bodyLarge.copy(color = Color.Gray)
                 )
             }
@@ -82,16 +87,14 @@ fun HistorialScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 12.dp, vertical = 6.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = LazabusBlue // TARJETA AZUL
+                            containerColor = LazabusBlue
                         ),
                         elevation = CardDefaults.cardElevation(6.dp)
                     ) {
                         Column(
-                            modifier = Modifier
-                                .padding(16.dp)
+                            modifier = Modifier.padding(16.dp)
                         ) {
 
-                            // Ruta
                             Text(
                                 text = viaje.ruta.uppercase(),
                                 fontSize = 20.sp,
@@ -101,7 +104,6 @@ fun HistorialScreen(
 
                             Spacer(modifier = Modifier.height(4.dp))
 
-                            // Descripción
                             Text(
                                 text = viaje.descripcionRuta,
                                 fontSize = 18.sp,
@@ -112,23 +114,27 @@ fun HistorialScreen(
 
                             Spacer(modifier = Modifier.height(12.dp))
 
-                            // Origen y destino
                             Text(
-                                text = "Origen: ${viaje.origen}",
+                                text = "${stringResource(R.string.origin)}: ${viaje.origen}",
                                 fontWeight = FontWeight.Medium,
                                 color = Color.White
                             )
                             Text(
-                                text = "Destino: ${viaje.destino}",
+                                text = "${stringResource(R.string.destination)}: ${viaje.destino}",
                                 fontWeight = FontWeight.Medium,
                                 color = Color.White
                             )
 
                             Spacer(modifier = Modifier.height(12.dp))
 
-                            // Paradas
-                            Text("Parada origen: ${viaje.paradaOrigen}", color = Color.White)
-                            Text("Parada destino: ${viaje.paradaDestino}", color = Color.White)
+                            Text(
+                                text = "${stringResource(R.string.origin_stop)}: ${viaje.paradaOrigen}",
+                                color = Color.White
+                            )
+                            Text(
+                                text = "${stringResource(R.string.destination_stop)}: ${viaje.paradaDestino}",
+                                color = Color.White
+                            )
                         }
                     }
                 }

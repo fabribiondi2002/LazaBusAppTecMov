@@ -2,4 +2,30 @@
     <string name="app_name">LazaBus</string>
     <string name="voiceButtonDescription">Botón de comando de voz. Toca para iniciar la navegación o hacer preguntas sobre el transporte público.</string>
     <string name="mapDescription">"Mapa interactivo de la ciudad. Muestra tu ubicación actual, paradas de autobús y rutas disponibles. Desplázate para explorar."</string>
+
+    <string name="menu_title">Menú</string>
+    <string name="menu_close">Cerrar menú</string>
+
+    <string name="menu_history">Historial de Viajes</string>
+    <string name="back">Go back</string>
+    <string name="clear_history">Clear history</string>
+
+    <string name="origin">Origin</string>
+    <string name="destination">Destination</string>
+
+    <string name="origin_stop">Origin stop</string>
+    <string name="destination_stop">Destination stop</string>
+
+    <string name="no_history">No travel history yet</string>
+
+    <string name="menu_contact">Contactar al Administrador</string>
+
+    <string name="voice_settings">Configuración de voz</string>
+    <string name="reading_speed">Velocidad de lectura: %1$.2fx</string>
+    <string name="voice_language">Idioma de voz</string>
+
+    <string name="spanish">Español</string>
+    <string name="english">Inglés</string>
+
+    <string name="contact_failed">No se pudo abrir la app de teléfono.</string>
 </resources>

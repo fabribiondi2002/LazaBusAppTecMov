@@ -20,6 +20,9 @@ import com.iua.gpi.lazabus.ui.viewmodel.TtsViewModel
 import kotlinx.coroutines.delay
 import androidx.compose.runtime.getValue
 
+/**
+ * Composable del splash.
+ */
 @Composable
 fun SplashScreen(onTimeout: () -> Unit, viewModel: TtsViewModel = hiltViewModel())
 {

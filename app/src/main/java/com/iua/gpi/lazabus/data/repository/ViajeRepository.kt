@@ -5,6 +5,9 @@ import com.iua.gpi.lazabus.data.local.entity.ViajeEntity
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+/**
+ * Repositorio para el historial de viajes.
+ */
 class ViajeRepository @Inject constructor(private val viajeDao: ViajeDao) {
 
     val historial: Flow<List<ViajeEntity>> = viajeDao.obtenerViajes()

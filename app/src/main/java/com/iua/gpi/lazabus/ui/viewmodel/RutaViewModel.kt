@@ -18,35 +18,30 @@ import org.osmdroid.util.GeoPoint
 import retrofit2.await
 import javax.inject.Inject
 
+/**
+ * ViewModel para la ruta optima.
+ */
 @HiltViewModel
 class RutaViewModel @Inject constructor() : ViewModel() {
 
     private val _rutaOptima = MutableStateFlow<RutaOptima?>(null)
     val rutaOptima = _rutaOptima.asStateFlow()
 
-    private val _rutas = MutableStateFlow<List<Ruta>>(emptyList())
-    val rutas = _rutas.asStateFlow()
-
     val paradasGeoPoints: StateFlow<List<GeoPoint>> = _rutaOptima
-        // Mapeamos el Flow de RutaOptima? a List<GeoPoint>
         .map { rutaOptima ->
-            // Si la ruta óptima existe, extraemos la lista de paradas de la ruta anidada.
-            rutaOptima?.ruta?.paradas
-                // Mapeamos cada ParadaCompleta a un objeto GeoPoint
-                ?.map { parada ->
-                    // Usar (latitud, longitud) según la convención de GeoPoint
-                    GeoPoint(parada.lat, parada.lon)
-                }
-            // Si la ruta o las paradas son null, devolvemos una lista vacía
-                ?: emptyList()
+            rutaOptima?.ruta?.paradas?.map {
+                GeoPoint(it.lat, it.lon)
+            } ?: emptyList()
         }
-        // 2. Convertimos el Flow resultante en un StateFlow, resolviendo la inferencia de tipo 'R'.
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList() // El valor inicial es una lista vacía de GeoPoint
+            initialValue = emptyList()
         )
 
+    fun limpiarRuta() {
+        _rutaOptima.value = null
+    }
 
     fun calcularRutaOptima(
         olat: Double,
@@ -68,32 +63,7 @@ class RutaViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-
-    fun calcularRutas(
-        olat: Double,
-        olng: Double,
-        dlat: Double,
-        dlng: Double,
-        onError: (Throwable) -> Unit
-    ) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val result = RetrofitClient.api
-                    .calcularRutas(olat, olng, dlat, dlng)
-                    .await()
-
-                _rutas.value = result
-            } catch (e: Exception) {
-                onError(e)
-            }
-        }
-    }
-
-
-    fun getRutaOptima(): RutaOptima? = rutaOptima.value
-
     fun finalizarViaje() {
-        _rutaOptima.value = null
-        _rutas.value = emptyList()
+        limpiarRuta()
     }
 }

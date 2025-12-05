@@ -7,6 +7,9 @@ import androidx.room.Query
 import com.iua.gpi.lazabus.data.local.entity.ViajeEntity
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * DAO para el historial de viajes.
+ */
 @Dao
 interface ViajeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)

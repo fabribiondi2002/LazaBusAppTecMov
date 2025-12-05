@@ -13,18 +13,22 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Singleton
 
+/**
+ * Servicio de ubicación que implementa la interfaz LocationServiceI
+ */
 @Singleton
 class LocationService (private val context: Context
 ) : LocationServiceI {
 
     private val TAG = "LocationService"
-
+    /**
+     * Obtiene los cambios de ubicación del usuario
+     */
     @SuppressLint("MissingPermission")
     override fun getLocationUpdates(): Flow<Location?> = callbackFlow {
 
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-        // 🔥 CHECK DE PERMISOS ANTES DE TOCAR EL LOCATION MANAGER
         val fine = android.content.pm.PackageManager.PERMISSION_GRANTED ==
                 androidx.core.content.ContextCompat.checkSelfPermission(
                     context, android.Manifest.permission.ACCESS_FINE_LOCATION
@@ -38,11 +42,9 @@ class LocationService (private val context: Context
         if (!fine && !coarse) {
             Log.e(TAG, "No hay permisos de ubicación → deteniendo flujo")
             trySend(null)
-            close()     // Cierra el flow para evitar más llamadas
+            close()
             return@callbackFlow
         }
-
-        // Última ubicación conocida
         val ultima = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
             ?: locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
 

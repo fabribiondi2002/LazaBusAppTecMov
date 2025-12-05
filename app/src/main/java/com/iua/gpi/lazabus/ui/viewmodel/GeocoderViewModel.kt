@@ -13,7 +13,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import java.io.IOException
 
-
+/**
+ * Estado de la UI de GeocoderViewModel
+ */
 data class GeocoderState(
     val coordenadas: String = "Introduce una ubicación para buscar",
     val location : Address? = null,
@@ -23,6 +25,9 @@ data class GeocoderState(
 
 private const val TAG = "GeocoderViewModel"
 
+/**
+ * ViewModel para la geocodificación.
+ */
 @HiltViewModel
 class GeocoderViewModel @Inject constructor(
     // Hilt inyecta tu implementación de GeocodeServiceI
@@ -95,4 +100,10 @@ class GeocoderViewModel @Inject constructor(
         val lon = String.format("%.6f", address.longitude)
         return "Latitud: $lat, Longitud: $lon"
     }
+    fun clearLocation() {
+        _geocoderState.update {
+            GeocoderState()
+        }
+    }
+
 }

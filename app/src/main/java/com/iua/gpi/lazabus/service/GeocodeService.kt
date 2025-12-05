@@ -10,11 +10,16 @@ import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Servicio de Geocoding que implementa la interfaz GeocodeServiceI
+ */
 @Singleton
 class GeocodeService @Inject constructor(
      private val context: Context
 ) : GeocodeServiceI {
-
+    /*
+     * Obtiene las coordenadas de una ubicación a partir de su nombre
+     */
     override suspend fun getCoordinatesForLocation(locationName: String): Result<Address> {
         return withContext(Dispatchers.IO) {
             val geocoder = Geocoder(context, Locale.getDefault())

@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">LazaBus</string>
+    <string name="voiceButtonDescription">
+        Voice command button. Tap to start navigation or ask questions about public transportation.
+    </string>
+    <string name="mapDescription">
+        "Interactive city map. Shows your current location, bus stops, and available routes. Scroll to explore."
+    </string>
+
+    <string name="menu_title">Menu</string>
+    <string name="menu_close">Close menu</string>
+
+    <string name="menu_history">Travel History</string>
+    <string name="back">Volver</string>
+    <string name="clear_history">Limpiar historial</string>
+
+    <string name="origin">Origen</string>
+    <string name="destination">Destino</string>
+
+    <string name="origin_stop">Parada origen</string>
+    <string name="destination_stop">Parada destino</string>
+
+    <string name="no_history">Aún no tienes viajes en el historial</string>
+
+    <string name="menu_contact">Contact Administrator</string>
+
+    <string name="voice_settings">Voice Settings</string>
+    <string name="reading_speed">Reading speed: %1$.2fx</string>
+    <string name="voice_language">Voice language</string>
+
+    <string name="spanish">Spanish</string>
+    <string name="english">English</string>
+
+    <string name="contact_failed">Could not open the phone app.</string>
+</resources>
