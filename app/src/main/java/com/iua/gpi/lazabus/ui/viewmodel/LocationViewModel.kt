@@ -15,6 +15,9 @@ import androidx.core.content.ContextCompat
 import android.app.Application
 import org.osmdroid.util.GeoPoint
 
+/**
+ * ViewModel para las ubicaciones.
+ */
 @HiltViewModel
 class LocationViewModel @Inject constructor(
     private val locationService: LocationServiceI,
@@ -70,4 +73,16 @@ class LocationViewModel @Inject constructor(
 
         }
     }
+    fun clearLocation() {
+        _currentLocation.value = null
+        _destinoGeoPoint.value = null
+        _origenGeoPoint.value = null
+    }
+    fun clearDestino(){
+        _destinoGeoPoint.value = null
+    }
+    fun clearOrigen(){
+        _origenGeoPoint.value = null
+    }
+
 }

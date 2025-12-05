@@ -4,17 +4,21 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.iua.gpi.lazabus.ui.screen.HistorialScreen
 import com.iua.gpi.lazabus.ui.screen.MainScreen
 import com.iua.gpi.lazabus.ui.screen.Route
 import com.iua.gpi.lazabus.ui.screen.SplashScreen
 
+/**
+ * Navegación de la aplicación.
+ */
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
-        startDestination = Route.SplashRoute.route // Usamos el 'route' del objeto
+        startDestination = Route.SplashRoute.route
     ) {
         // Splash
         composable(Route.SplashRoute.route) {
@@ -23,15 +27,15 @@ fun AppNavigation() {
             })
         }
         // Main
-        composable(Route.MainRoute.route) { MainScreen() }
-        /*
-         Navegacion con parametros
-        composable(
-            route = Screen.Detail.route, // Usamos la ruta base con placeholder
-            arguments = listOf(navArgument("userId") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val userId = backStackEntry.arguments?.getString("userId") ?: "Error"
-            DetailScreen(userId = userId)
-        }**/
-    }
+        composable(Route.MainRoute.route) {
+            MainScreen(
+                onOpenHistorial = {
+                    navController.navigate(Route.HistorialRoute.route)
+                }
+            )
+        }
+        // Historial
+        composable(Route.HistorialRoute.route) {
+            HistorialScreen(onBack = { navController.popBackStack() })
+        }    }
 }

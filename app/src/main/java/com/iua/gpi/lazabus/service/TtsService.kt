@@ -4,45 +4,61 @@ import android.content.Context
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import com.iua.gpi.lazabus.service.interf.TtsServiceI
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.Locale
 import javax.inject.Inject
+import com.iua.gpi.lazabus.data.AppPreferences
+import com.iua.gpi.lazabus.interaction.Dialogos
 
+/**
+ * Servicio de TextToSpeech que implementa la interfaz TtsServiceI
+ */
+class TtsService @Inject constructor(
+    private val context: Context,
+    private val prefs: AppPreferences
 
-class TtsService(private val context: Context // Usamos Application Context
 ) : TtsServiceI, TextToSpeech.OnInitListener {
 
     private var tts: TextToSpeech? = null
 
     private val _isMotorReady = MutableStateFlow(false)
     override val isMotorReady: StateFlow<Boolean> = _isMotorReady.asStateFlow()
+    private var currentSpeed: Float = prefs.getSpeed()
 
     override var isInitialized: Boolean = false
         private set
 
+    /**
+     * Inicializa el servicio de TextToSpeech
+     */
     override fun initialize() {
         if (tts == null) {
-            // Inicializa TextToSpeech, pasándole el contexto de la app y el listener
             tts = TextToSpeech(context, this)
         }
     }
 
+    /**
+     * Cuando el servicio de TextToSpeech se inicia configura el idioma, el tono y la velocidad de salida.
+     */
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
-            val result = tts?.setLanguage(Locale("es", "AR"))
+            val langCode = prefs.getLanguage()
+            Dialogos.setIdioma(langCode)
+            val locale = when (langCode) {
+                "en" -> Locale.US
+                else -> Locale("es", "AR")
+            }
+
+            val result = tts?.setLanguage(locale)
+
+
             if (result != TextToSpeech.LANG_MISSING_DATA && result != TextToSpeech.LANG_NOT_SUPPORTED) {
 
-                // AJUSTE DE VELOCIDAD (Para que hable más PAUSADO)
-                // 1.0f es la velocidad normal. Prueba con 0.8f o 0.7f para ir más lento.
-                val speechRate = 0.8f
-                tts?.setSpeechRate(speechRate)
-                Log.i("TTS", "Velocidad de habla ajustada a: $speechRate")
+                tts?.setSpeechRate(currentSpeed)
+                Log.i("TTS", "Velocidad de habla ajustada a: $currentSpeed")
 
-                // AJUSTE DE TONO
-                // 1.0f es el tono normal. Prueba con 1.1f o 0.9f para experimentar.
                 val pitch = 0.8f
                 tts?.setPitch(pitch)
                 Log.i("TTS", "Tono de voz ajustado a: $pitch")
@@ -58,6 +74,9 @@ class TtsService(private val context: Context // Usamos Application Context
         }
     }
 
+    /**
+     * Habla el texto proporcionado
+     */
     override fun speak(text: String) {
         if (isInitialized) {
             tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, text.hashCode().toString())
@@ -66,6 +85,24 @@ class TtsService(private val context: Context // Usamos Application Context
         }
     }
 
+    /**
+     * Establece la velocidad de habla
+     */
+    override fun setSpeed(speed: Float) {
+        currentSpeed = speed
+        prefs.saveSpeed(speed)
+        tts?.setSpeechRate(speed)
+        Log.i("TTS", "Velocidad del TTS actualizada: $speed")
+    }
+
+    /**
+     * Obtiene la velocidad de habla
+     */
+    override fun getSpeed(): Float = currentSpeed
+
+    /**
+     * Libera el servicio de TextToSpeech
+     */
     override fun shutdown() {
         tts?.stop()
         tts?.shutdown()
@@ -73,4 +110,16 @@ class TtsService(private val context: Context // Usamos Application Context
         isInitialized = false
         Log.i("TTS", "Servicio TTS Liberado.")
     }
+
+
+    override fun setLanguage(lang: String) {
+        prefs.saveLanguage(lang)
+
+        tts?.language = when (lang) {
+            "en" -> Locale.US
+            else -> Locale("es", "AR")
+        }
+    }
+    override fun getLanguaje(): String = prefs.getLanguage()
+
 }

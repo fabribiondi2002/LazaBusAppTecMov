@@ -17,7 +17,9 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
-
+/**
+ * Composable del mapa de la aplicación.
+ */
 @Composable
 fun MapArea(
     modifier: Modifier,
@@ -31,32 +33,18 @@ fun MapArea(
     ) {
         val context = LocalContext.current
 
-        // Configurar osmdroid al inicio (solo una vez)
-        // cache del dispositivo.
         Configuration.getInstance().load(context, context.getSharedPreferences("osmdroid", 0))
 
-        //Crear y recordar la instancia de MapView
         val mapView = remember {
             MapView(context).apply {
-                // Establecer la fuente de los tiles (OSM estándar)
                 setTileSource(TileSourceFactory.MAPNIK)
                 setBuiltInZoomControls(false)
                 setMultiTouchControls(true)
-
-                // Establecer la posición inicial
                 val cordoba = GeoPoint(-31.428447981733132, -64.18492561421215)
                 controller.setZoom(16.0)
                 controller.setCenter(cordoba)
-
-                // Agregar un marcador (ejemplo simplificado)
-                // val marker = Marker(this)
-                // marker.position = madrid
-                // marker.title = "Madrid"
-                // overlays.add(marker)
             }
         }
-
-        //Usar AndroidView para incrustar el MapView de osmdroid en Compose
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = { mapView },

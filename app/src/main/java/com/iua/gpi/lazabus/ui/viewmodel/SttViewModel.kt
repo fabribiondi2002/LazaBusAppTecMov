@@ -6,6 +6,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
+/**
+ * ViewModel para el reconocimiento de voz.
+ */
 @HiltViewModel
 class SttViewModel @Inject constructor(
     private val sstService : SttServiceI
@@ -30,4 +33,9 @@ class SttViewModel @Inject constructor(
         sstService.stopListening()
         super.onCleared()
     }
+
+    fun clearText() {
+        sstService.clearText()
+    }
+
 }

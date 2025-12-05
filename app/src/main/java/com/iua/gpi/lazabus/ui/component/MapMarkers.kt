@@ -10,6 +10,7 @@ import kotlinx.coroutines.delay
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Overlay
+import androidx.core.graphics.toColorInt
 
 /**
  * Overlay personalizado que dibuja puntos (círculos) en el mapa.
@@ -35,11 +36,12 @@ class PointsOverlay(
         strokeWidth = strokeWidthPx
     }
 
-    // Para evitar crear objetos en cada draw
     private val tmpPoint = Point()
 
+    /**
+     * Dibuja los puntos en el mapa.
+     */
     override fun draw(canvas: Canvas, mapView: MapView, shadow: Boolean) {
-        // Dibujamos sólo en la capa visible (shadow == false)
         if (shadow) return
 
         val projection = mapView.projection
@@ -65,13 +67,12 @@ fun MapMarkers(
     origen: GeoPoint?,
     destino: GeoPoint?,
     radiusPx: Float = 20f,
-    fillColor: Int = Color.RED,
     strokeColor: Int = Color.WHITE,
     strokeWidthPx: Float = 2f
 ) {
-    val colorRuta = Color.parseColor("#0072B2")     // Azul
-    val colorOrigen = Color.parseColor("#E69F00")   // Naranja
-    val colorDestino = Color.parseColor("#CC79A7")  // Magenta
+    val colorRuta = "#0072B2".toColorInt()     // Azul
+    val colorOrigen = "#E69F00".toColorInt()   // Naranja
+    val colorDestino = "#CC79A7".toColorInt()  // Magenta
     LaunchedEffect(mapView, coordinates, origen, destino) {
 
         if (mapView == null) return@LaunchedEffect
