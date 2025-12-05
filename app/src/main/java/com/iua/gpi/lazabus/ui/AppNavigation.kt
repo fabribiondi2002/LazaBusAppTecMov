@@ -9,13 +9,16 @@ import com.iua.gpi.lazabus.ui.screen.MainScreen
 import com.iua.gpi.lazabus.ui.screen.Route
 import com.iua.gpi.lazabus.ui.screen.SplashScreen
 
+/**
+ * Navegación de la aplicación.
+ */
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
-        startDestination = Route.SplashRoute.route // Usamos el 'route' del objeto
+        startDestination = Route.SplashRoute.route
     ) {
         // Splash
         composable(Route.SplashRoute.route) {

@@ -1,9 +1,12 @@
 package com.iua.gpi.lazabus.ui.screen
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -24,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.iua.gpi.lazabus.R
 import com.iua.gpi.lazabus.interaction.manageInteraction
+import com.iua.gpi.lazabus.interaction.restartInteraction
 import com.iua.gpi.lazabus.ui.component.MapArea
 import com.iua.gpi.lazabus.ui.component.MapMarkers
 import com.iua.gpi.lazabus.ui.component.VoiceActionButton
@@ -33,7 +37,12 @@ import com.iua.gpi.lazabus.ui.viewmodel.*
 import kotlinx.coroutines.launch
 import org.osmdroid.views.MapView
 import com.iua.gpi.lazabus.ui.theme.LazabusBlue
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
+/**
+ * Composable de la pantalla principal
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
@@ -59,9 +68,8 @@ fun MainScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    var isRestart by remember { mutableStateOf(false) }
 
-    LaunchedEffect(isRestart) {
+    LaunchedEffect(Unit) {
         manageInteraction(
             ttsviewModel,
             sttviewmodel,
@@ -70,16 +78,8 @@ fun MainScreen(
             rutaViewModel,
             buttonManagerViewModel,
             viajeViewModel,
-            isRestart
         )
 
-        // Esperamos si el usuario quiere reiniciar
-        if (buttonManagerViewModel.state.value == InteractionState.AWAITING_RESTART_CONFIRMATION) {
-            val restart = buttonManagerViewModel.awaitConfirmation(InteractionState.AWAITING_RESTART_CONFIRMATION)
-            if (restart) {
-                isRestart = true // Esto relanza el LaunchedEffect
-            }
-        }
     }
     DisposableEffect(Unit) {
         onDispose {
@@ -102,7 +102,7 @@ fun MainScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Menú",
+                        text = stringResource(R.string.menu_title),
                         style = MaterialTheme.typography.titleLarge
                     )
 
@@ -113,29 +113,43 @@ fun MainScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Close,
-                            contentDescription = "Cerrar menú"
+                            contentDescription = stringResource(R.string.menu_close)
                         )
                     }
                 }
 
                 NavigationDrawerItem(
-                    label = { Text("Historial de Viajes") },
+                    label = { Text(stringResource(R.string.menu_history)) },
                     selected = false,
                     onClick = {
                         scope.launch { drawerState.close() }
                         onOpenHistorial()
                     },
                     icon = {
-                        Icon(Icons.Default.DateRange, contentDescription = "Historial")
+                        Icon(Icons.Default.DateRange, contentDescription = stringResource(R.string.menu_history))
                     }
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 12.dp),
                 )
 
+                NavigationDrawerItem(
+                    label = { Text(stringResource(R.string.menu_contact)) },
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        contactarPorTelefono(context)
+                    },
+                    icon = {
+                        Icon(Icons.Default.Call, contentDescription = stringResource(R.string.menu_contact))
+                    }
+                )
 
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                )
                 Text(
-                    "Configuración de voz",
+                    stringResource(R.string.voice_settings),
                     modifier = Modifier.padding(start = 16.dp, bottom = 8.dp),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
@@ -144,7 +158,7 @@ fun MainScreen(
                 val speed by ttsviewModel.speed.collectAsState()
 
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    Text("Velocidad de lectura: ${String.format("%.2f", speed)}x")
+                    Text(stringResource(R.string.reading_speed, speed))
 
                     Slider(
                         value = speed,
@@ -152,8 +166,36 @@ fun MainScreen(
                             ttsviewModel.updateSpeed(newSpeed)
                         },
                         valueRange = 0.5f..1.5f,
-                        steps = 5
+                        steps = 10
                     )
+                }
+
+                Text(
+                    stringResource(R.string.voice_language),
+                    modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 8.dp),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                val currentLang by ttsviewModel.language.collectAsState()
+
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = currentLang == "es",
+                        onClick = { ttsviewModel.updateLanguage("es") }
+                    )
+                    Text(stringResource(R.string.spanish))
+
+                    Spacer(Modifier.width(16.dp))
+
+                    RadioButton(
+                        selected = currentLang == "en",
+                        onClick = { ttsviewModel.updateLanguage("en") }
+                    )
+                    Text(stringResource(R.string.english))
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -189,7 +231,7 @@ fun MainScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Menu,
-                                contentDescription = "Abrir menú"
+                                contentDescription = stringResource(R.string.menu_title)
                             )
                         }
                     },
@@ -240,9 +282,34 @@ fun MainScreen(
                                 .fillMaxWidth()
                                 .padding(bottom = paddingValues.calculateBottomPadding()),
                             onClick = {
-                                buttonManagerViewModel.confirmInteraction()
                                 vibrar(context)
-                            },
+
+                                scope.launch {
+                                    when (currentInteractionState) {
+
+                                        InteractionState.AWAITING_RESTART_CONFIRMATION -> {
+                                            locationViewModel.clearDestino()
+                                            rutaViewModel.limpiarRuta()
+                                            sttviewmodel.clearText()
+
+                                            restartInteraction(
+                                                tts = ttsviewModel,
+                                                stt = sttviewmodel,
+                                                geocoder = geocoderViewModel,
+                                                location = locationViewModel,
+                                                rutas = rutaViewModel,
+                                                buttons = buttonManagerViewModel,
+                                                viajeVM = viajeViewModel
+                                            )
+                                        }
+
+                                        else -> {
+                                            buttonManagerViewModel.confirmInteraction()
+                                        }
+                                    }
+                                }
+                            }
+                            ,
                             imageVector = icon
                         )
                     }
@@ -262,3 +329,16 @@ fun vibrar(context : Context) {
         vibrator.vibrate(100)
     }
 }
+fun contactarPorTelefono(context: Context) {
+    val numero = "5492920361887"
+    val uri = Uri.parse("tel:$numero")
+
+    try {
+        val intent = Intent(Intent.ACTION_DIAL, uri)
+
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        Toast.makeText(context, context.getString(R.string.contact_failed), Toast.LENGTH_SHORT).show()
+    }
+}
+

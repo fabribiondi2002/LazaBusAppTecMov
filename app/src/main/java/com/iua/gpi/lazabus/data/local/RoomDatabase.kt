@@ -7,6 +7,9 @@ import androidx.room.RoomDatabase
 import com.iua.gpi.lazabus.data.local.dao.ViajeDao
 import com.iua.gpi.lazabus.data.local.entity.ViajeEntity
 
+/**
+ * Configuración de la base de datos Room.
+ */
 @Database(
     entities = [ViajeEntity::class],
     version = 1,

@@ -10,8 +10,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import java.util.Locale
 import javax.inject.Inject
 import com.iua.gpi.lazabus.data.AppPreferences
+import com.iua.gpi.lazabus.interaction.Dialogos
 
-
+/**
+ * Servicio de TextToSpeech que implementa la interfaz TtsServiceI
+ */
 class TtsService @Inject constructor(
     private val context: Context,
     private val prefs: AppPreferences
@@ -27,26 +30,35 @@ class TtsService @Inject constructor(
     override var isInitialized: Boolean = false
         private set
 
+    /**
+     * Inicializa el servicio de TextToSpeech
+     */
     override fun initialize() {
         if (tts == null) {
-            // Inicializa TextToSpeech, pasándole el contexto de la app y el listener
             tts = TextToSpeech(context, this)
         }
     }
 
+    /**
+     * Cuando el servicio de TextToSpeech se inicia configura el idioma, el tono y la velocidad de salida.
+     */
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
-            val result = tts?.setLanguage(Locale("es", "AR"))
-            if (result != TextToSpeech.LANG_MISSING_DATA && result != TextToSpeech.LANG_NOT_SUPPORTED) {
+            val langCode = prefs.getLanguage()
+            Dialogos.setIdioma(langCode)
+            val locale = when (langCode) {
+                "en" -> Locale.US
+                else -> Locale("es", "AR")
+            }
 
-                // AJUSTE DE VELOCIDAD (Para que hable más PAUSADO)
-                // 1.0f es la velocidad normal. Prueba con 0.8f o 0.7f para ir más lento.
+            val result = tts?.setLanguage(locale)
+
+
+            if (result != TextToSpeech.LANG_MISSING_DATA && result != TextToSpeech.LANG_NOT_SUPPORTED) {
 
                 tts?.setSpeechRate(currentSpeed)
                 Log.i("TTS", "Velocidad de habla ajustada a: $currentSpeed")
 
-                // AJUSTE DE TONO
-                // 1.0f es el tono normal. Prueba con 1.1f o 0.9f para experimentar.
                 val pitch = 0.8f
                 tts?.setPitch(pitch)
                 Log.i("TTS", "Tono de voz ajustado a: $pitch")
@@ -62,6 +74,9 @@ class TtsService @Inject constructor(
         }
     }
 
+    /**
+     * Habla el texto proporcionado
+     */
     override fun speak(text: String) {
         if (isInitialized) {
             tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, text.hashCode().toString())
@@ -70,6 +85,9 @@ class TtsService @Inject constructor(
         }
     }
 
+    /**
+     * Establece la velocidad de habla
+     */
     override fun setSpeed(speed: Float) {
         currentSpeed = speed
         prefs.saveSpeed(speed)
@@ -77,8 +95,14 @@ class TtsService @Inject constructor(
         Log.i("TTS", "Velocidad del TTS actualizada: $speed")
     }
 
+    /**
+     * Obtiene la velocidad de habla
+     */
     override fun getSpeed(): Float = currentSpeed
 
+    /**
+     * Libera el servicio de TextToSpeech
+     */
     override fun shutdown() {
         tts?.stop()
         tts?.shutdown()
@@ -86,4 +110,16 @@ class TtsService @Inject constructor(
         isInitialized = false
         Log.i("TTS", "Servicio TTS Liberado.")
     }
+
+
+    override fun setLanguage(lang: String) {
+        prefs.saveLanguage(lang)
+
+        tts?.language = when (lang) {
+            "en" -> Locale.US
+            else -> Locale("es", "AR")
+        }
+    }
+    override fun getLanguaje(): String = prefs.getLanguage()
+
 }

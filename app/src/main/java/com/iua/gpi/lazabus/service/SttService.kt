@@ -15,20 +15,19 @@ import kotlinx.coroutines.flow.asStateFlow
 import java.util.Locale
 import javax.inject.Inject
 
+/**
+ * Servicio de reconocimiento de voz que implementa la interfaz SttServiceI
+ */
 class SttService (private val context: Context
 ) : SttServiceI, RecognitionListener {
 
     private val TAG = "SttService"
 
     private val speechRecognizer: SpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
-
-    // Flows para exponer el estado a la capa superior
     private val _recognizedText = MutableStateFlow("")
     override val recognizedText: StateFlow<String> = _recognizedText.asStateFlow()
-
     private val _isListening = MutableStateFlow(false)
     override val isListening: StateFlow<Boolean> = _isListening.asStateFlow()
-
     private val _recognitionError = MutableStateFlow(false)
     override val recognitionError: StateFlow<Boolean> = _recognitionError.asStateFlow()
 
@@ -36,12 +35,14 @@ class SttService (private val context: Context
         speechRecognizer.setRecognitionListener(this)
     }
 
+    /**
+     * Inicia la escucha de voz con un intent de reconocimiento de voz.
+     */
     override fun startListening() {
-        // Lógica de Intent y startListening aquí...
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(
                 RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM // Dictado general, no comandos específicos
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
             )
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
         }
@@ -49,31 +50,41 @@ class SttService (private val context: Context
         _isListening.value = true
     }
 
+    /**
+     * Detiene la escucha de voz.
+     */
     override fun stopListening() {
         speechRecognizer.stopListening()
         _isListening.value = false
     }
 
 
-    // Implementación de RecognitionListener
-    // Cuando el servicio está listo para recibir voz.
+    /**
+     * Prepara el servicio para está cuando listo para recibir la entrada de voz.
+     */
     override fun onReadyForSpeech(params: Bundle?) {
         _recognizedText.value = "" // Limpiamos el texto anterior al comenzar una nueva sesión
         _recognitionError.value= false
         Log.d(TAG, "Micrófono listo para hablar.")
     }
 
-    // Cuando el usuario comienza a hablar. Útil para feedback visual.
+    /**
+     * Cuando el usuario comienza a hablar se indica por logs.
+     */
     override fun onBeginningOfSpeech() {
         Log.d(TAG, "Comienzo de la entrada de voz.")
     }
 
-    //Cuando el usuario deja de hablar. El procesamiento comienza.
+    /**
+     * Cuando el servicio finaliza la entrada de voz se indica por logs.
+     */
     override fun onEndOfSpeech() {
         Log.d(TAG, "Fin de la entrada de voz, esperando resultados.")
     }
 
-    // Se recibe el resultado del reconocimiento (Callback más importante).
+    /**
+     * Cuando el servicio recibe los resultados de la entrada de voz se guardan y se muestran por logs
+     */
     override fun onResults(results: Bundle) {
         val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
         val finalResult = matches?.getOrNull(0) ?: "No se reconoció voz."
@@ -93,24 +104,23 @@ class SttService (private val context: Context
         //Log.v(TAG, "Resultado parcial: $partialText")
     }
 
-    // Ocurre un error durante el proceso de reconocimiento.
+    /**
+     * Cuando ocurre un error en la entrada de voz se indica por logs.
+     */
     override fun onError(error: Int) {
-        _isListening.value = false // Detenemos la escucha debido al error
+        _isListening.value = false
         val errorMessage = getErrorText(error)
-
-        // Notificamos el error al ViewModel o UI (puedes usar otro StateFlow para errores)
         _recognizedText.value = ""
         _recognitionError.value=true
 
         Log.e(TAG, "Error de reconocimiento: $errorMessage ($error)")
     }
 
-    // Se detecta un cambio en el volumen (Root Mean Square - RMS).
-    override fun onRmsChanged(rmsdB: Float) {
-        // Útil para animar una barra de sonido en la UI
-        //Log.v(TAG, "Volumen cambiado (RMS): $rmsdB dB")
-    }
 
+
+    /**
+     * Convierte un código de error en un mensaje de error correspondiente.
+     */
     private fun getErrorText(error: Int): String {
         return when (error) {
             SpeechRecognizer.ERROR_AUDIO -> "Error de captura de audio."
@@ -125,12 +135,13 @@ class SttService (private val context: Context
             else -> "Error desconocido."
         }
     }
-
-    // Métodos menos comunes que se deben implementar
-    override fun onBufferReceived(buffer: ByteArray?) { /* Ignorado en la mayoría de los casos */ }
-    override fun onEvent(eventType: Int, params: Bundle?) { /* Ignorado en la mayoría de los casos */ }
-    override fun reset() {
+    override fun clearText() {
         _recognizedText.value = ""
         _recognitionError.value = false
     }
+
+    // Métodos menos comunes no implementados
+    override fun onRmsChanged(rmsdB: Float) { /* Útil para animar una barra de sonido en la UI */ }
+    override fun onBufferReceived(buffer: ByteArray?) { /* Ignorado en la mayoría de los casos */ }
+    override fun onEvent(eventType: Int, params: Bundle?) { /* Ignorado en la mayoría de los casos */ }
 }

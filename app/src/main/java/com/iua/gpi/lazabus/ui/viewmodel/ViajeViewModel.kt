@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel para el historial de viajes en la base de datos.
+ */
 @HiltViewModel
 class ViajeViewModel @Inject constructor(
     private val repository: ViajeRepository

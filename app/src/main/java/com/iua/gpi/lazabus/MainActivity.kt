@@ -9,7 +9,9 @@ import com.iua.gpi.lazabus.ui.AppNavigation
 import com.iua.gpi.lazabus.ui.theme.LazaBusTheme
 import dagger.hilt.android.AndroidEntryPoint
 
-
+/**
+ * Actividad principal de la aplicación.
+ */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

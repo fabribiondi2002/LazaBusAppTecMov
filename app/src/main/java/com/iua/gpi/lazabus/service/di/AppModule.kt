@@ -20,23 +20,21 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-
+/**
+ * Archivo que contiene los modulos de Hilt para inyectar dependencias.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    // Provee el Context de la Aplicación
     @Provides
     fun provideApplicationContext(@ApplicationContext context: Context): Context {
         return context
     }
 
-    // 💡 Aquí Hilt sabe que cuando se pida TtsService, debe crear un AndroidTtsService
-    // con el ApplicationContext.
     @Provides
     @Singleton
     fun provideTtsService(@ApplicationContext context: Context, prefs: AppPreferences): TtsServiceI {
-        // Usar AndroidTtsService y hacer que viva mientras viva la app (Singleton)
         return TtsService(context, prefs)
     }
 

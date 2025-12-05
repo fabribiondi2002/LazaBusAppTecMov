@@ -3,6 +3,9 @@ package com.iua.gpi.lazabus.data.local.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+/**
+ * Entidad para el historial de viajes.
+ */
 @Entity(tableName = "viajes")
 data class ViajeEntity(
     @PrimaryKey(autoGenerate = true)
