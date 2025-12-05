@@ -66,6 +66,12 @@ La app ofrece navegación guiada por voz, selección accesible de ubicaciones, h
   10. Se guarda el viaje en Room.
   11. El usuario puede ver su historial en la pantalla correspondiente.
 
+▶️ GIF
+https://drive.google.com/file/d/1UgGamGUh5TuUDP3_kNA9QQM1rB_ubQT8/view?usp=drive_link
+
+⭐ APK
+https://drive.google.com/file/d/1Zo1GdH9vCRLhPgloAyLvN6bSMlXY28jN/view?usp=drive_link
+
 **👨‍💻 Autores**
 
 Leandro Biondi - lbiondi733@qalumnos.iua.edu.ar
